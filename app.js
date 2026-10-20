@@ -2335,6 +2335,14 @@ renderCharacterLibrary = function () {
             duplicateCrawler(entry.id);
         });
 
+const exportButton = document.createElement("button");
+exportButton.type = "button";
+exportButton.textContent = "EXPORT";
+
+exportButton.addEventListener("click", () => {
+    exportCrawler(entry.id);
+});
+
         const deleteButton = document.createElement("button");
         deleteButton.type = "button";
         deleteButton.textContent = "DELETE";
@@ -2343,11 +2351,14 @@ renderCharacterLibrary = function () {
             deleteCrawler(entry.id);
         });
 
-        actions.append(
-            renameButton,
-            duplicateButton,
-            deleteButton
-        );
+        
+actions.append(
+    renameButton,
+    duplicateButton,
+    exportButton,
+    deleteButton
+);
+
 
         card.append(
             label,
@@ -2387,3 +2398,221 @@ renderCharacterLibrary = function () {
 
 // Refresh the library with the new management controls.
 renderCharacterLibrary();
+
+// ------------------------------------
+// CHARACTER EXPORT / IMPORT - V0.8C
+// ------------------------------------
+
+const CHARACTER_EXPORT_FORMAT = "dcc-character";
+const LIBRARY_EXPORT_FORMAT = "dcc-library";
+const EXPORT_VERSION = 1;
+
+function safeFileName(name) {
+    return String(name || "crawler")
+        .replace(/[^a-z0-9_-]+/gi, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 60) || "crawler";
+}
+
+function downloadJSON(data, filename) {
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], {
+        type: "application/json"
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = filename;
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function exportCrawler(characterId) {
+    const crawler = characterLibrary.characters.find(
+        entry => entry.id === characterId
+    );
+
+    if (!crawler) return;
+
+    downloadJSON(
+        {
+            format: CHARACTER_EXPORT_FORMAT,
+            version: EXPORT_VERSION,
+            character: crawler
+        },
+        "DCC-" +
+        safeFileName(crawler.identity.name) +
+        ".json"
+    );
+}
+
+function exportEntireLibrary() {
+    downloadJSON(
+        {
+            format: LIBRARY_EXPORT_FORMAT,
+            version: EXPORT_VERSION,
+            characters: characterLibrary.characters
+        },
+        "DCC-Character-Library.json"
+    );
+}
+
+function isValidCharacterData(data) {
+    return (
+        data !== null &&
+        typeof data === "object" &&
+        !Array.isArray(data) &&
+        data.identity !== null &&
+        typeof data.identity === "object" &&
+        !Array.isArray(data.identity) &&
+        data.stats !== null &&
+        typeof data.stats === "object" &&
+        !Array.isArray(data.stats) &&
+        Array.isArray(data.skills) &&
+        Array.isArray(data.inventory)
+    );
+}
+
+function extractImportedCharacters(data) {
+    if (!data || typeof data !== "object") {
+        throw new Error("This file is not valid JSON character data.");
+    }
+
+    let characters;
+
+    if (data.format === CHARACTER_EXPORT_FORMAT) {
+        if (data.version !== EXPORT_VERSION) {
+            throw new Error("Unsupported character export version.");
+        }
+        characters = [data.character];
+
+    } else if (data.format === LIBRARY_EXPORT_FORMAT) {
+        if (data.version !== EXPORT_VERSION) {
+            throw new Error("Unsupported library export version.");
+        }
+        characters = data.characters;
+
+    } else if (Array.isArray(data.characters)) {
+        // Also support raw dccCharacterLibraryV1 backups.
+        characters = data.characters;
+
+    } else if (isValidCharacterData(data)) {
+        // Also support raw legacy character backups.
+        characters = [data];
+
+    } else {
+        throw new Error(
+            "This is not a recognized DCC character or library file."
+        );
+    }
+
+    if (!Array.isArray(characters) || characters.length === 0) {
+        throw new Error("The file contains no characters.");
+    }
+
+    if (!characters.every(isValidCharacterData)) {
+        throw new Error(
+            "One or more characters have invalid or missing data."
+        );
+    }
+
+    return characters;
+}
+
+async function importCharacterFile(file) {
+    if (!file) return;
+
+    // Keep accidentally selected enormous files out of the app.
+    const MAX_FILE_BYTES = 10 * 1024 * 1024;
+
+    if (file.size > MAX_FILE_BYTES) {
+        alert("Import file is too large (10 MB maximum).");
+        return;
+    }
+
+    try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+
+        const imported = extractImportedCharacters(parsed);
+
+        const confirmed = confirm(
+            "Import " + imported.length +
+            " crawler(s)?\n\n" +
+            "Each crawler will be added as an independent copy.\n" +
+            "Your existing characters will not be replaced."
+        );
+
+        if (!confirmed) return;
+
+        // Prepare every copy before changing the saved library.
+        const copies = imported.map(source => {
+            const copy = structuredClone(source);
+
+            // Prevent collisions with existing character IDs.
+            copy.id = crypto.randomUUID();
+
+            return prepareCharacter(copy);
+        });
+
+        const updatedLibrary = {
+            ...characterLibrary,
+            characters: [
+                ...characterLibrary.characters,
+                ...copies
+            ]
+        };
+
+        // Save first, then update the in-memory library.
+        // If storage is full, the existing library stays intact.
+        localStorage.setItem(
+            CHARACTER_LIBRARY_KEY,
+            JSON.stringify(updatedLibrary)
+        );
+
+        characterLibrary = updatedLibrary;
+
+        renderCharacterLibrary();
+
+        alert(
+            "Successfully imported " +
+            copies.length +
+            " crawler(s)!"
+        );
+
+    } catch (error) {
+        console.error("DCC import failed:", error);
+
+        alert(
+            "Import failed.\n\n" +
+            error.message +
+            "\n\nYour existing characters were not changed."
+        );
+    }
+}
+
+document.getElementById("exportLibraryButton")
+    .addEventListener("click", exportEntireLibrary);
+
+const characterImportFile =
+    document.getElementById("characterImportFile");
+
+document.getElementById("importCharacterButton")
+    .addEventListener("click", () => {
+        characterImportFile.click();
+    });
+
+characterImportFile.addEventListener("change", async () => {
+    const file = characterImportFile.files[0];
+
+    await importCharacterFile(file);
+
+    // Allow selecting the same file again.
+    characterImportFile.value = "";
+});

@@ -1442,3 +1442,36 @@ button {
         flex-wrap: wrap;
     }
 }
+
+/* ---------- CHARACTER TRANSFERS V0.8C ---------- */
+
+.library-transfer-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 35px;
+    padding-bottom: 30px;
+}
+
+.library-transfer-actions button {
+    background: #444;
+    color: white;
+    border: 1px solid #777;
+    padding: 13px 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.library-transfer-actions button:hover {
+    background: #d62828;
+    border-color: #d62828;
+}
+
+.crawler-card-actions {
+    flex-wrap: wrap;
+}
+
+.crawler-card-actions button {
+    flex: 1 1 40%;
+}
