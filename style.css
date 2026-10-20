@@ -1475,3 +1475,286 @@ button {
 .crawler-card-actions button {
     flex: 1 1 40%;
 }
+/* Extra scrolling room below the character sheet */
+body {
+    padding-bottom: 300px;
+}
+
+/* ---------- ATTACKS V0.9A ---------- */
+
+.attacks-section {
+    margin: 28px auto;
+    max-width: 1085px;
+}
+
+.attacks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #181818;
+    color: white;
+    padding: 10px 16px;
+}
+
+.attacks-header h2 {
+    margin: 0;
+}
+
+.attacks-header button,
+.attack-form-actions button {
+    background: #d62828;
+    color: white;
+    border: 0;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.attack-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.attack-row {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.2fr 1.5fr;
+    gap: 12px;
+    padding: 14px;
+    background: white;
+    border: 1px solid #ccc;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+}
+
+.attack-row:hover {
+    border-color: #d62828;
+}
+
+.attack-row span {
+    overflow-wrap: anywhere;
+}
+
+.attack-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 1100;
+}
+
+.attack-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(430px, 100%);
+    height: 100vh;
+    overflow-y: auto;
+    background: #fff;
+    z-index: 1101;
+    padding: 22px;
+    box-sizing: border-box;
+    box-shadow: -4px 0 20px rgba(0,0,0,.2);
+}
+
+.attack-overlay[hidden],
+.attack-sidebar[hidden] {
+    display: none;
+}
+
+.attack-sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.attack-sidebar-header button {
+    font-size: 28px;
+    background: none;
+    border: 0;
+    cursor: pointer;
+}
+
+#attackForm {
+    display: grid;
+    gap: 14px;
+    margin-top: 20px;
+}
+
+#attackForm label {
+    display: grid;
+    gap: 5px;
+    font-weight: bold;
+}
+
+#attackForm input,
+#attackForm select,
+#attackForm textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 9px;
+}
+
+.attack-preview {
+    background: #eee;
+    padding: 12px;
+    border-left: 3px solid #d62828;
+}
+
+.attack-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+@media (max-width: 650px) {
+    .attack-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* VERSION 1.0 — DEFENSES & CUSTOM SECTION ORDER */
+.crawler-heading, .defense-section > h2 {
+  margin: 0 0 14px; padding: 8px 12px;
+  background: #111; color: #fff; font-size: 18px;
+}
+.defense-section { width: calc(100% - 32px); max-width:1085px; margin:25px auto; }
+.defense-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; }
+.defense-card { border:2px solid #222; padding:12px; min-width:0; }
+.defense-card strong { display:block; font-size:26px; padding:8px 0; }
+.defense-card label { margin-bottom:8px; }
+.defense-card textarea, .defense-section textarea { width:100%; padding:9px; border:2px solid #222; font:inherit; resize:vertical; }
+.defense-card summary { cursor:pointer; font-weight:bold; font-size:13px; padding:7px 0; }
+.defense-card details p { font-size:13px; }
+.defense-section h3 { font-size:15px; margin:18px 0 10px; }
+.buff-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.section-control-wrap { position:relative; margin:16px 0; }
+.section-control-bar { display:flex; justify-content:flex-end; gap:5px; padding:4px 6px; background:#e2e2e2; }
+.section-control-bar button { padding:5px 9px; border:1px solid #555; background:white; font-weight:bold; }
+.section-control-bar button:disabled { opacity:.3; cursor:default; }
+.section-control-wrap > section[hidden] { display:none !important; }
+.section-control-wrap > section { margin-top:0; margin-bottom:0; }
+@media(max-width:650px) { .buff-grid { grid-template-columns:1fr; } .defense-section { width:100%; } }
+
+/* VERSION 1.1 — HEADING-IN-BAR SECTION CONTROLS */
+.section-control-bar {
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px; padding:0 8px 0 0; min-height:43px;
+  background:#111; color:#fff;
+}
+.section-control-bar > .movable-section-heading,
+.section-control-bar > h2 {
+  flex:1; min-width:0; margin:0; background:transparent;
+  color:#fff; border:0; padding:8px 12px;
+  font-size:18px; font-weight:bold;
+}
+.section-control-bar > .section-heading,
+.section-control-bar > .attacks-header { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.section-move-buttons { display:flex; gap:5px; flex-shrink:0; }
+.section-move-buttons button { padding:5px 9px; background:#fff; color:#111; }
+.section-control-wrap > section { margin-top:12px; }
+/* VERSION 1.1 — CRAWLER PORTRAIT / HEADER / TROPHIES */
+main { position:relative; }
+.crawler-heading { margin-bottom:12px; }
+.crawler-portrait-area { float:left; width:160px; margin:0 18px 10px 0; text-align:center; }
+.portrait-frame { width:160px; height:160px; border:2px solid #222; background:#f2f2f2; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.portrait-frame img { width:100%; height:100%; object-fit:cover; }
+.portrait-frame img[hidden], #portraitPlaceholder[hidden] { display:none; }
+#portraitPlaceholder { font-size:12px; font-weight:bold; color:#777; }
+.portrait-upload-label, #removePortrait { display:block; width:100%; margin-top:6px; padding:7px; background:#222; color:white; border:0; font-size:11px; cursor:pointer; }
+#removePortrait { background:#eee; color:#333; border:1px solid #aaa; }
+.character-info { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-bottom:12px; }
+.crawler-bottom-row { clear:both; display:flex; gap:20px; align-items:start; justify-content:space-between; margin-bottom:25px; }
+.trophy-panel { flex:1; min-width:0; }
+.trophy-panel-title { display:flex; align-items:center; gap:12px; margin-bottom:8px; font-size:13px; }
+#editTrophiesButton { padding:6px 10px; border:1px solid #333; background:#eee; font-size:11px; font-weight:bold; }
+.trophy-counters { display:flex; flex-wrap:wrap; gap:8px; }
+.trophy-item { display:flex; flex-direction:column; align-items:center; justify-content:start; gap:1px; min-width:45px; padding:4px; border:1px solid #ccc; background:#222; color:#fff; border-radius:3px; }
+.trophy-number { font-weight:bold; font-size:13px; }
+.trophy-icon { font-size:27px; line-height:1.1; font-family:Arial, sans-serif; text-shadow:0 0 1px #555; }
+.trophy-adjust { display:flex; gap:2px; align-items:center; margin-top:5px; }
+.trophy-adjust button { padding:3px 5px; }
+.trophy-adjust input { width:42px; padding:3px; font-size:12px; text-align:center; }
+.crawler-level-floor { display:grid; grid-template-columns:repeat(2,minmax(75px,1fr)); gap:10px; max-width:230px; }
+@media(max-width:850px) { .crawler-portrait-area { width:120px; } .portrait-frame { width:120px; height:120px; } .character-info { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:600px) { .crawler-portrait-area { float:none; margin:0 0 14px; } .character-info { grid-template-columns:repeat(2,minmax(0,1fr)); } .crawler-bottom-row { flex-direction:column; } .crawler-level-floor { max-width:none; } .section-control-bar { flex-wrap:wrap; } .section-control-bar > .movable-section-heading { width:100%; } }
+
+/* VERSION 1.1.1 — CRAWLER HEADER AND ATTACK HEADER POLISH */
+.crawler-profile-layout {
+    display: grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    align-items: start;
+    column-gap: 18px;
+    margin-bottom: 24px;
+}
+.crawler-portrait-area { float: none; margin: 0; }
+.crawler-profile-details { min-width: 0; }
+.crawler-profile-details .character-info { margin-bottom: 16px; }
+.crawler-profile-details .crawler-bottom-row {
+    clear: none;
+    margin: 0;
+    align-items: start;
+    gap: 14px;
+}
+.crawler-profile-details .trophy-panel { min-width: 0; }
+.crawler-profile-details .crawler-level-floor { flex-shrink: 0; }
+.section-control-bar > .attacks-header {
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    flex: 1;
+    min-width: 0;
+}
+.section-control-bar > .attacks-header h2 {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+}
+.section-control-bar #addAttackButton {
+    background: #d62828;
+    color: #fff;
+    border: 0;
+    padding: 10px 15px;
+    font-size: 13px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+.hotlist-cap-count { font-size: 12px; font-weight: normal; margin-left: 9px; color: #ddd; }
+@media (max-width: 850px) {
+    .crawler-profile-layout { grid-template-columns: 120px minmax(0,1fr); }
+    .crawler-profile-details .crawler-bottom-row { flex-wrap: wrap; }
+}
+@media (max-width: 600px) {
+    .crawler-profile-layout { grid-template-columns: 1fr; row-gap: 12px; }
+    .crawler-profile-details .crawler-bottom-row { flex-direction: column; }
+    .section-control-bar > .attacks-header { flex-wrap: wrap; }
+}
+/* ATTACKS HEADER ALIGNMENT */
+
+.attacks-header {
+    padding-left: 16px;
+}
+
+.attacks-header h2 {
+    margin: 0;
+    font-size: inherit;
+}
+/* COMPACT DEFENSES & MOVEMENT */
+
+.defense-grid {
+    align-items: start;
+}
+
+.defense-card {
+    min-height: 0;
+    height: auto;
+}
+
+.defense-card input {
+    max-width: 100%;
+}
+
+.defense-card details {
+    margin-top: 8px;
+}

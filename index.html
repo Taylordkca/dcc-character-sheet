@@ -55,6 +55,15 @@
 
     <main>
 
+        <h2 class="crawler-heading">CRAWLER</h2>
+        <div class="crawler-profile-layout">
+        <div class="crawler-portrait-area">
+          <div class="portrait-frame"><img id="crawlerPortrait" alt="Crawler portrait" hidden><span id="portraitPlaceholder">NO PORTRAIT</span></div>
+          <label class="portrait-upload-label" for="portraitUpload">UPLOAD JPG</label>
+          <input type="file" id="portraitUpload" accept="image/jpeg,.jpg,.jpeg" hidden>
+          <button type="button" id="removePortrait">REMOVE</button>
+        </div>
+        <div class="crawler-profile-details">
         <section class="character-info">
 
             <label>
@@ -93,6 +102,15 @@
             </label>
 
         </section>
+        <div class="crawler-bottom-row">
+          <div class="trophy-panel">
+            <div class="trophy-panel-title"><strong>TROPHIES</strong><button type="button" id="editTrophiesButton">EDIT TROPHIES</button></div>
+            <div id="trophyCounters" class="trophy-counters"></div>
+          </div>
+          <div id="crawlerLevelFloor" class="crawler-level-floor"></div>
+        </div>
+        </div>
+        </div>
 
         <section class="stats">
 
@@ -265,6 +283,41 @@
 </section>
 
     </main>
+
+<!-- DEFENSES & MOVEMENT - VERSION 1.0 -->
+<section class="defense-section" id="defenseSection">
+  <h2>DEFENSES & MOVEMENT</h2>
+  <div class="defense-grid">
+    <div class="defense-card">
+      <label>EVADE (DEX MOD + ADJUSTMENT)
+        <strong id="evadeTotal">—</strong>
+      </label>
+      <label>Adjustment <input type="number" id="evadeAdjustment" placeholder="0"></label>
+      <details><summary>Evade breakdown / description</summary>
+        <p id="evadeBreakdown"></p>
+        <textarea id="evadeDescription" rows="3" placeholder="Equipment, spells, conditions..."></textarea>
+      </details>
+    </div>
+    <div class="defense-card">
+      <label>DAMAGE RESISTANCE <input type="number" id="damageResistance" placeholder="DR"></label>
+      <details><summary>DR description</summary>
+        <textarea id="drDescription" rows="3" placeholder="Armor, items, bonuses..."></textarea>
+      </details>
+    </div>
+    <div class="defense-card"><label>MOVE <input type="text" id="defenseMove" placeholder="e.g. 30 ft"></label></div>
+    <div class="defense-card"><label>STEP <input type="text" id="defenseStep" placeholder="e.g. 5 ft"></label></div>
+    <div class="defense-card"><label>AI FAVOR <input type="text" id="defenseFavor" placeholder="Editable"></label></div>
+  </div>
+  <h3>BUFFS</h3>
+  <div class="buff-grid">
+    <textarea id="buffOne" rows="3" aria-label="Buff 1" placeholder="Buff 1"></textarea>
+    <textarea id="buffTwo" rows="3" aria-label="Buff 2" placeholder="Buff 2"></textarea>
+    <textarea id="buffThree" rows="3" aria-label="Buff 3" placeholder="Buff 3"></textarea>
+  </div>
+  <h3>DEBUFFS</h3>
+  <textarea id="defenseDebuffs" rows="5" aria-label="Debuffs" placeholder="Active debuffs and effects..."></textarea>
+</section>
+
 <!-- ---------- SKILLS & SPELLS ---------- -->
 
 <section class="skills-section">
@@ -398,6 +451,98 @@
     </div>
 
 </section>
+
+<!-- ATTACKS - VERSION 0.9A -->
+<section class="attacks-section">
+    <div class="attacks-header">
+        <h2>ATTACKS</h2>
+        <button type="button" id="addAttackButton">
+            + ADD ATTACK
+        </button>
+    </div>
+
+    <div id="attackList" class="attack-list"></div>
+</section>
+
+<div id="attackOverlay" class="attack-overlay" hidden></div>
+
+<aside id="attackSidebar" class="attack-sidebar" hidden>
+    <div class="attack-sidebar-header">
+        <h2 id="attackSidebarTitle">ATTACK</h2>
+        <button type="button" id="closeAttackSidebar">×</button>
+    </div>
+
+    <form id="attackForm">
+        <label>Attack Name
+            <input id="attackName" required>
+        </label>
+
+        <label>Linked Skill
+            <select id="attackSkill">
+                <option value="">None — Manual Attack</option>
+            </select>
+        </label>
+
+        <div id="attackLinkedPreview" class="attack-preview"></div>
+
+        <label>Manual Rank Override
+            <input id="attackRankOverride"
+                   type="number" min="0"
+                   placeholder="Blank = linked rank">
+        </label>
+
+        <label>To-Hit Stat Override
+            <select id="attackHitStat">
+                <option value="">Use linked skill</option>
+                <option value="STR">STR</option>
+                <option value="INT">INT</option>
+                <option value="CON">CON</option>
+                <option value="DEX">DEX</option>
+                <option value="CHA">CHA</option>
+            </select>
+        </label>
+
+        <label>Damage Dice
+            <input id="attackDamageDice" placeholder="e.g. 2d6">
+        </label>
+
+        <label>Damage Stat
+            <select id="attackDamageStat">
+                <option value="linked">Use to-hit stat</option>
+                <option value="none">No stat modifier</option>
+                <option value="STR">STR</option>
+                <option value="INT">INT</option>
+                <option value="CON">CON</option>
+                <option value="DEX">DEX</option>
+                <option value="CHA">CHA</option>
+            </select>
+        </label>
+
+        <label>Additional Damage Modifier
+            <input id="attackDamageBonus" type="number"
+                   placeholder="0">
+        </label>
+
+        <label>Mana Cost
+            <input id="attackManaCost" type="number"
+                   min="0" placeholder="Optional">
+        </label>
+
+        <label>Effects / Notes
+            <textarea id="attackEffects" rows="4"></textarea>
+        </label>
+
+        <div class="attack-form-actions">
+            <button type="submit">SAVE ATTACK</button>
+            <button type="button" id="duplicateAttackButton">
+                DUPLICATE
+            </button>
+            <button type="button" id="deleteAttackButton">
+                DELETE
+            </button>
+        </div>
+    </form>
+</aside>
 
 <!-- ---------- INVENTORY ---------- -->
 

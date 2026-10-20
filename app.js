@@ -1992,6 +1992,21 @@ function renderHotlist() {
         item => item.location === "Hotlist" && !item.hidden
     );
 
+    // Informational only: 10 is a soft guideline, never a restriction.
+    const hotlistHeader = document.querySelector(
+        '[data-section="hotlist"] .movable-section-heading'
+    );
+    if (hotlistHeader) {
+        let counter = hotlistHeader.querySelector('.hotlist-cap-count');
+        if (!counter) {
+            counter = document.createElement('span');
+            counter.className = 'hotlist-cap-count';
+            hotlistHeader.appendChild(counter);
+        }
+        counter.textContent = `· ${hotlistItems.length} / 10`;
+        counter.title = 'Suggested hotlist size; no enforced limit';
+    }
+
     hotlistItems.forEach(item => {
         const button = document.createElement("button");
         button.type = "button";
@@ -2616,3 +2631,672 @@ characterImportFile.addEventListener("change", async () => {
     // Allow selecting the same file again.
     characterImportFile.value = "";
 });
+
+// ------------------------------------
+// ATTACKS - VERSION 0.9A
+// ------------------------------------
+
+let selectedAttackId = null;
+
+const attackSidebar = document.getElementById("attackSidebar");
+const attackOverlay = document.getElementById("attackOverlay");
+const attackForm = document.getElementById("attackForm");
+
+const attackFields = {
+    name: "attackName",
+    skillId: "attackSkill",
+    rankOverride: "attackRankOverride",
+    hitStat: "attackHitStat",
+    damageDice: "attackDamageDice",
+    damageStat: "attackDamageStat",
+    damageBonus: "attackDamageBonus",
+    manaCost: "attackManaCost",
+    effects: "attackEffects"
+};
+
+function getAttackSkill(attack) {
+    return character.skills.find(
+        skill => skill.id === attack.skillId
+    );
+}
+
+function getAttackStatMod(stat) {
+    const names = {
+        STR: "strength",
+        INT: "intelligence",
+        CON: "constitution",
+        DEX: "dexterity",
+        CHA: "charisma"
+    };
+
+    if (!names[stat]) return null;
+
+    return getStatMod(
+        character.stats[names[stat]].enhanced
+    );
+}
+
+function getAttackNumbers(attack) {
+    const skill = getAttackSkill(attack);
+
+    const rank = attack.rankOverride !== ""
+        && attack.rankOverride !== undefined
+        ? attack.rankOverride
+        : (skill?.rank ?? "");
+
+    const hitStat = attack.hitStat ||
+        skill?.stat || "";
+
+    const hitMod = getAttackStatMod(hitStat);
+
+    const damageStat = attack.damageStat === "none"
+        ? ""
+        : attack.damageStat === "linked" ||
+          !attack.damageStat
+            ? hitStat
+            : attack.damageStat;
+
+    const damageMod = damageStat
+        ? getAttackStatMod(damageStat)
+        : null;
+
+    const extra = attack.damageBonus === ""
+        ? 0
+        : Number(attack.damageBonus || 0);
+
+    const totalDamageMod =
+        (damageMod ?? 0) + extra;
+
+    return {
+        skill,
+        rank,
+        hitStat,
+        hitMod,
+        totalDamageMod
+    };
+}
+
+function formatAttackHit(numbers) {
+    if (numbers.rank === "" &&
+        numbers.hitMod === null) return "—";
+
+    return (numbers.rank === "" ? "—" : numbers.rank) +
+        " + " +
+        (numbers.hitMod === null ? "—" : numbers.hitMod);
+}
+
+function formatAttackDamage(attack, numbers) {
+    const dice = attack.damageDice || "—";
+    const mod = numbers.totalDamageMod;
+
+    return dice + (mod >= 0 ? " + " : " − ") +
+        Math.abs(mod);
+}
+
+function renderAttacks() {
+    const container = document.getElementById("attackList");
+    container.replaceChildren();
+
+    if (!Array.isArray(character.attacks)) {
+        character.attacks = [];
+    }
+
+    character.attacks.forEach(attack => {
+        const numbers = getAttackNumbers(attack);
+
+        const row = document.createElement("button");
+        row.type = "button";
+        row.className = "attack-row";
+
+        const values = [
+            attack.name || "Unnamed Attack",
+            formatAttackHit(numbers),
+            formatAttackDamage(attack, numbers),
+            attack.effects || ""
+        ];
+
+        values.forEach(value => {
+            const span = document.createElement("span");
+            span.textContent = value;
+            row.appendChild(span);
+        });
+
+        row.addEventListener("click", () => {
+            openAttackEditor(attack.id);
+        });
+
+        container.appendChild(row);
+    });
+}
+
+function refreshAttackSkillOptions(selectedId = "") {
+    const select = document.getElementById("attackSkill");
+    select.replaceChildren();
+
+    select.add(new Option("None — Manual Attack", ""));
+
+    character.skills.forEach(skill => {
+        select.add(new Option(
+            skill.name || "Unnamed Skill",
+            skill.id
+        ));
+    });
+
+    // Preserve missing links so users can repair them.
+    if (selectedId &&
+        !character.skills.some(s => s.id === selectedId)) {
+        select.add(new Option(
+            "Missing Skill — Reconnect",
+            selectedId
+        ));
+    }
+
+    select.value = selectedId;
+}
+
+function updateAttackPreview() {
+    const temp = {};
+
+    Object.entries(attackFields).forEach(([key, id]) => {
+        temp[key] = document.getElementById(id).value;
+    });
+
+    const numbers = getAttackNumbers(temp);
+    const preview = document.getElementById("attackLinkedPreview");
+
+    if (temp.skillId && !numbers.skill) {
+        preview.textContent =
+            "Linked skill is missing. Choose another skill.";
+        return;
+    }
+
+    preview.textContent =
+        "Rank: " + (numbers.rank || "—") +
+        " | Stat: " + (numbers.hitStat || "—") +
+        " | To Hit: " + formatAttackHit(numbers) +
+        " | Damage: " + formatAttackDamage(temp, numbers);
+}
+
+function openAttackEditor(attackId = null) {
+    selectedAttackId = attackId;
+
+    const attack = character.attacks.find(
+        entry => entry.id === attackId
+    );
+
+    refreshAttackSkillOptions(attack?.skillId || "");
+
+    Object.entries(attackFields).forEach(([key, id]) => {
+        const input = document.getElementById(id);
+
+        input.value = attack
+            ? (attack[key] ?? "")
+            : (key === "damageStat" ? "linked" : "");
+    });
+
+    document.getElementById("attackSidebarTitle").textContent =
+        attack ? "EDIT ATTACK" : "NEW ATTACK";
+
+    document.getElementById("duplicateAttackButton").hidden =
+        !attack;
+
+    document.getElementById("deleteAttackButton").hidden =
+        !attack;
+
+    updateAttackPreview();
+
+    attackOverlay.hidden = false;
+    attackSidebar.hidden = false;
+}
+
+function closeAttackEditor() {
+    attackSidebar.hidden = true;
+    attackOverlay.hidden = true;
+    selectedAttackId = null;
+}
+
+document.getElementById("addAttackButton")
+    .addEventListener("click", () => openAttackEditor());
+
+document.getElementById("closeAttackSidebar")
+    .addEventListener("click", closeAttackEditor);
+
+attackOverlay.addEventListener("click", closeAttackEditor);
+
+attackForm.addEventListener("input", updateAttackPreview);
+attackForm.addEventListener("change", updateAttackPreview);
+
+attackForm.addEventListener("submit", event => {
+    event.preventDefault();
+
+    const values = {};
+
+    Object.entries(attackFields).forEach(([key, id]) => {
+        values[key] = document.getElementById(id).value.trim();
+    });
+
+    if (!values.name) {
+        alert("Attack name is required.");
+        return;
+    }
+
+    if (selectedAttackId) {
+        const existing = character.attacks.find(
+            attack => attack.id === selectedAttackId
+        );
+
+        if (!existing) return;
+
+        Object.assign(existing, values);
+
+    } else {
+        character.attacks.push({
+            id: crypto.randomUUID(),
+            ...values
+        });
+    }
+
+    saveCharacter();
+    renderAttacks();
+    closeAttackEditor();
+});
+
+document.getElementById("duplicateAttackButton")
+    .addEventListener("click", () => {
+        const original = character.attacks.find(
+            attack => attack.id === selectedAttackId
+        );
+
+        if (!original) return;
+
+        const duplicate = structuredClone(original);
+        duplicate.id = crypto.randomUUID();
+        duplicate.name = original.name + " (Copy)";
+
+        character.attacks.push(duplicate);
+
+        saveCharacter();
+        renderAttacks();
+        openAttackEditor(duplicate.id);
+    });
+
+document.getElementById("deleteAttackButton")
+    .addEventListener("click", () => {
+        const attack = character.attacks.find(
+            entry => entry.id === selectedAttackId
+        );
+
+        if (!attack) return;
+
+        if (!confirm("Delete " + attack.name + "?")) return;
+
+        character.attacks = character.attacks.filter(
+            entry => entry.id !== selectedAttackId
+        );
+
+        saveCharacter();
+        renderAttacks();
+        closeAttackEditor();
+    });
+
+// Keep attacks updated when skill ranks or stats change.
+const originalRenderSkillsForAttacks = renderSkills;
+
+renderSkills = function () {
+    originalRenderSkillsForAttacks();
+    renderAttacks();
+};
+
+// Close attack editor when switching crawlers.
+const originalSelectCharacterForAttacks = selectCharacter;
+
+selectCharacter = function (id) {
+    closeAttackEditor();
+    originalSelectCharacterForAttacks(id);
+    renderAttacks();
+};
+
+renderAttacks();
+
+// ------------------------------------
+// VERSION 1.0 — DEFENSES & MOVEMENT
+// ------------------------------------
+const defenseInputMap = {
+  evadeAdjustment: "evadeAdjustment",
+  evadeDescription: "evadeDescription",
+  damageResistance: "damageResistance",
+  drDescription: "drDescription",
+  defenseMove: "move",
+  defenseStep: "step",
+  defenseFavor: "aiFavor",
+  buffOne: "buffOne",
+  buffTwo: "buffTwo",
+  buffThree: "buffThree",
+  defenseDebuffs: "debuffs"
+};
+
+function ensureDefenseData() {
+  if (!character.defenses || typeof character.defenses !== "object") {
+    character.defenses = {};
+  }
+  return character.defenses;
+}
+
+function renderDefenses() {
+  const data = ensureDefenseData();
+  Object.entries(defenseInputMap).forEach(([id, key]) => {
+    document.getElementById(id).value = data[key] ?? "";
+  });
+  updateEvadeDisplay();
+}
+
+function updateEvadeDisplay() {
+  const dex = getStatMod(character.stats.dexterity.enhanced);
+  const adjustment = Number(ensureDefenseData().evadeAdjustment || 0);
+  const total = dex === null ? null : dex + adjustment;
+  document.getElementById("evadeTotal").textContent =
+    total === null ? "—" : (total >= 0 ? "+" : "") + total;
+  document.getElementById("evadeBreakdown").textContent =
+    "DEX modifier: " + (dex === null ? "—" : dex) +
+    " | Adjustment: " + adjustment +
+    " | Total: " + (total === null ? "—" : total);
+}
+
+Object.entries(defenseInputMap).forEach(([id, key]) => {
+  document.getElementById(id).addEventListener("input", event => {
+    ensureDefenseData()[key] = event.target.value;
+    updateEvadeDisplay();
+    saveCharacter();
+  });
+});
+
+// Reuse the existing stat update pipeline without changing it.
+const renderSkillsBeforeDefense = renderSkills;
+renderSkills = function () {
+  renderSkillsBeforeDefense();
+  updateEvadeDisplay();
+};
+
+// ------------------------------------
+// VERSION 1.0 — MOVE / COLLAPSE SECTIONS
+// ------------------------------------
+const sectionDefinitions = [
+  ["stats", ".stats", "STATS"],
+  ["resources", ".resources", "HEALTH & MANA"],
+  ["defenses", "#defenseSection", "DEFENSES & MOVEMENT"],
+  ["skills", ".skills-section", "SKILLS & SPELLS"],
+  ["attacks", ".attacks-section", "ATTACKS"],
+  ["inventory", ".inventory-section", "INVENTORY"],
+  ["equipped", "#equippedSection", "EQUIPPED"],
+  ["hotlist", "#hotlistSection", "HOTLIST"]
+];
+const sectionHost = document.createElement("div");
+sectionHost.id = "sheetSectionHost";
+document.querySelector("main").appendChild(sectionHost);
+const sectionWrappers = new Map();
+
+sectionDefinitions.forEach(([key, selector, title]) => {
+  const section = document.querySelector(selector);
+  if (!section) return;
+  const wrap = document.createElement("div");
+  wrap.className = "section-control-wrap";
+  wrap.dataset.section = key;
+  const bar = document.createElement("div");
+  bar.className = "section-control-bar";
+  const up = document.createElement("button");
+  up.type = "button"; up.textContent = "↑";
+  up.title = "Move " + title + " up";
+  up.setAttribute("aria-label", up.title);
+  const down = document.createElement("button");
+  down.type = "button"; down.textContent = "↓";
+  down.title = "Move " + title + " down";
+  down.setAttribute("aria-label", down.title);
+  const toggle = document.createElement("button");
+  toggle.type = "button"; toggle.textContent = "− Collapse";
+  toggle.setAttribute("aria-label", "Collapse " + title);
+  // Move the real heading into the permanent control bar.
+  // Buttons like ADD SKILL remain available even when the section is collapsed.
+  const heading = section.querySelector(":scope > .section-heading, :scope > .attacks-header, :scope > h2");
+  if (heading) {
+    heading.classList.add("movable-section-heading");
+    bar.appendChild(heading);
+  } else {
+    const fallback = document.createElement("h2");
+    fallback.textContent = title;
+    bar.appendChild(fallback);
+  }
+  const buttons = document.createElement("div");
+  buttons.className = "section-move-buttons";
+  buttons.append(up, down, toggle);
+  bar.appendChild(buttons);
+  wrap.append(bar, section);
+  sectionHost.appendChild(wrap);
+  sectionWrappers.set(key, { wrap, section, up, down, toggle });
+  up.addEventListener("click", () => moveSheetSection(key, -1));
+  down.addEventListener("click", () => moveSheetSection(key, 1));
+  toggle.addEventListener("click", () => {
+    section.hidden = !section.hidden;
+    toggle.textContent = section.hidden ? "+ Expand" : "− Collapse";
+    toggle.setAttribute("aria-label", (section.hidden ? "Expand " : "Collapse ") + title);
+    saveSectionLayout();
+  });
+});
+
+function getSheetSectionLayout() {
+  if (!character.sheetLayout || typeof character.sheetLayout !== "object") {
+    character.sheetLayout = { order: [], collapsed: [] };
+  }
+  return character.sheetLayout;
+}
+
+function saveSectionLayout() {
+  const layout = getSheetSectionLayout();
+  layout.order = [...sectionHost.children].map(node => node.dataset.section);
+  layout.collapsed = [...sectionWrappers.entries()]
+    .filter(([, entry]) => entry.section.hidden)
+    .map(([key]) => key);
+  saveCharacter();
+}
+
+function refreshSectionControls() {
+  const children = [...sectionHost.children];
+  children.forEach((node, index) => {
+    const controls = sectionWrappers.get(node.dataset.section);
+    controls.up.disabled = index === 0;
+    controls.down.disabled = index === children.length - 1;
+  });
+}
+
+function moveSheetSection(key, direction) {
+  const nodes = [...sectionHost.children];
+  const index = nodes.findIndex(node => node.dataset.section === key);
+  const next = index + direction;
+  if (index < 0 || next < 0 || next >= nodes.length) return;
+  const node = nodes[index];
+  if (direction < 0) sectionHost.insertBefore(node, nodes[next]);
+  else sectionHost.insertBefore(nodes[next], node);
+  refreshSectionControls();
+  saveSectionLayout();
+}
+
+function renderSectionLayout() {
+  const layout = getSheetSectionLayout();
+  const order = [...new Set([
+    ...(Array.isArray(layout.order) ? layout.order : []),
+    ...sectionDefinitions.map(([key]) => key)
+  ])];
+  order.forEach(key => {
+    const entry = sectionWrappers.get(key);
+    if (entry) sectionHost.appendChild(entry.wrap);
+  });
+  const collapsed = Array.isArray(layout.collapsed) ? layout.collapsed : [];
+  sectionWrappers.forEach(({ section, toggle }, key) => {
+    section.hidden = collapsed.includes(key);
+    toggle.textContent = section.hidden ? "+ Expand" : "− Collapse";
+  });
+  refreshSectionControls();
+}
+
+const selectCharacterBeforeDefense = selectCharacter;
+selectCharacter = function (id) {
+  selectCharacterBeforeDefense(id);
+  renderDefenses();
+  renderSectionLayout();
+};
+
+renderDefenses();
+renderSectionLayout();
+
+
+// ------------------------------------
+// VERSION 1.1 — PORTRAIT & TROPHIES
+// ------------------------------------
+const TROPHY_TYPES = [
+  ["neighborhood", "★", "Bronze", "Neighborhood Boss", "#bc7937"],
+  ["borough", "★", "Silver", "Borough Boss", "#aab0bb"],
+  ["city", "★", "Gold", "City Boss", "#d5a51d"],
+  ["province", "★", "Platinum", "Province Boss", "#96b8c6"],
+  ["country", "★", "Yellow", "Country Boss", "#e9cb20"],
+  ["floorBoss", "★", "Purple", "Floor Boss", "#9c68cf"],
+  ["crawlerKills", "☠", "White", "Crawler Kills", "#e8e8e8"],
+  ["leaderboardKills", "☠", "Gold", "Leaderboard Crawler Kills", "#d5a51d"],
+  ["hunterKills", "⚔", "White", "Hunter Kills", "#e8e8e8"],
+  ["eliteHunterKills", "⚔", "Gold", "Elite Hunter Kills", "#d5a51d"]
+];
+let editingTrophies = false;
+function getTrophies() {
+  if (!character.trophies || typeof character.trophies !== "object" || Array.isArray(character.trophies)) character.trophies = {};
+  return character.trophies;
+}
+function renderTrophies() {
+  const target = document.getElementById("trophyCounters");
+  target.replaceChildren();
+  const data = getTrophies();
+  TROPHY_TYPES.forEach(([key, symbol, colorName, label, color]) => {
+    const box = document.createElement("div");
+    box.className = "trophy-item";
+    box.title = label + " (" + colorName + ")";
+    const count = Math.max(0, Math.floor(Number(data[key]) || 0));
+    const number = document.createElement("span");
+    number.className = "trophy-number";
+    number.textContent = count;
+    const icon = document.createElement("span");
+    icon.className = "trophy-icon";
+    icon.style.color = color;
+    icon.textContent = symbol;
+    icon.setAttribute("aria-label", label);
+    box.append(number, icon);
+    if (editingTrophies) {
+      const controls = document.createElement("div");
+      controls.className = "trophy-adjust";
+      const minus = document.createElement("button");
+      minus.type = "button"; minus.textContent = "−";
+      minus.setAttribute("aria-label", "Decrease " + label);
+      const plus = document.createElement("button");
+      plus.type = "button"; plus.textContent = "+";
+      plus.setAttribute("aria-label", "Increase " + label);
+      const input = document.createElement("input");
+      input.type = "number"; input.min = "0"; input.step = "1";
+      input.value = count; input.setAttribute("aria-label", label + " count");
+      const update = value => {
+        const next = Math.max(0, Math.floor(Number(value) || 0));
+        data[key] = next;
+        number.textContent = next;
+        input.value = next;
+        saveCharacter();
+      };
+      minus.addEventListener("click", () => update(Number(input.value) - 1));
+      plus.addEventListener("click", () => update(Number(input.value) + 1));
+      input.addEventListener("change", () => update(input.value));
+      controls.append(minus, input, plus);
+      box.appendChild(controls);
+    }
+    target.appendChild(box);
+  });
+  document.getElementById("editTrophiesButton").textContent = editingTrophies ? "DONE" : "EDIT TROPHIES";
+}
+document.getElementById("editTrophiesButton").addEventListener("click", () => {
+  editingTrophies = !editingTrophies;
+  renderTrophies();
+});
+
+// Reposition existing inputs without recreating them: existing listeners stay attached.
+const crawlerFields = document.querySelector(".character-info");
+const crawlerFieldIds = ["characterName", "crawlerNumber", "race", "crawlerSize", "pronouns", "characterClass"];
+const fieldLabels = new Map([...crawlerFields.querySelectorAll(":scope > label")].map(label => [label.querySelector("input")?.id, label]));
+const sizeLabel = document.createElement("label");
+sizeLabel.textContent = "Size";
+const sizeInput = document.createElement("input");
+sizeInput.id = "crawlerSize"; sizeInput.type = "text"; sizeInput.placeholder = "e.g. Medium";
+sizeLabel.appendChild(sizeInput);
+fieldLabels.set("crawlerSize", sizeLabel);
+crawlerFieldIds.forEach(id => crawlerFields.appendChild(fieldLabels.get(id)));
+const levelFloor = document.getElementById("crawlerLevelFloor");
+["level", "floor"].forEach(id => levelFloor.appendChild(fieldLabels.get(id)));
+sizeInput.addEventListener("input", () => {
+  character.identity.size = sizeInput.value;
+  saveCharacter();
+});
+function renderCrawlerVisuals() {
+  sizeInput.value = character.identity.size || "";
+  const img = document.getElementById("crawlerPortrait");
+  const src = character.portraitJpg || "";
+  img.hidden = !src;
+  document.getElementById("portraitPlaceholder").hidden = !!src;
+  if (src) img.src = src;
+  else img.removeAttribute("src");
+  document.getElementById("portraitUpload").value = "";
+  editingTrophies = false;
+  renderTrophies();
+}
+function storePortraitData(dataUrl) {
+  const old = character.portraitJpg || "";
+  character.portraitJpg = dataUrl;
+  try { saveCharacter(); }
+  catch (error) {
+    character.portraitJpg = old;
+    alert("Unable to save portrait. Browser storage may be full. Export a backup and try a smaller image.");
+    return;
+  }
+  renderCrawlerVisuals();
+}
+document.getElementById("portraitUpload").addEventListener("change", event => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  if (!/image\/jpeg/.test(file.type) || file.size > 8 * 1024 * 1024) {
+    alert("Please choose a JPG/JPEG image smaller than 8 MB.");
+    event.target.value = "";
+    return;
+  }
+  const reader = new FileReader();
+  reader.onerror = () => alert("Unable to read portrait.");
+  reader.onload = () => {
+    const image = new Image();
+    image.onerror = () => alert("This JPG could not be opened.");
+    image.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 320; canvas.height = 320;
+      const ctx = canvas.getContext("2d");
+      const scale = Math.max(canvas.width / image.width, canvas.height / image.height);
+      const w = image.width * scale, h = image.height * scale;
+      ctx.drawImage(image, (320 - w) / 2, (320 - h) / 2, w, h);
+      storePortraitData(canvas.toDataURL("image/jpeg", 0.78));
+    };
+    image.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+});
+document.getElementById("removePortrait").addEventListener("click", () => {
+  if (!character.portraitJpg) return;
+  if (!confirm("Remove this crawler's portrait?")) return;
+  storePortraitData("");
+});
+const selectCharacterBeforeVisuals = selectCharacter;
+selectCharacter = function (id) {
+  selectCharacterBeforeVisuals(id);
+  renderCrawlerVisuals();
+};
+renderCrawlerVisuals();
+
+// Ensure the soft Hotlist count appears after movable headers are initialized.
+renderHotlist();
