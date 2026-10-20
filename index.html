@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DCC Character Sheet</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- CHARACTER LIBRARY - VERSION 0.8A -->
+
+<div id="characterLibraryScreen" class="character-library-screen" hidden>
+
+    <div class="character-library-content">
+        <h1>DUNGEON CRAWLER WORLD</h1>
+        <p class="character-library-subtitle">SELECT YOUR CRAWLER</p>
+
+        <div id="characterLibraryCards"
+             class="character-library-cards"></div>
+    </div>
+
+</div>
+
+<button type="button" id="returnToCharacters" hidden>
+    ← CHARACTERS
+</button>
+
+    <header>
+        <h1>DUNGEON CRAWLER CARL</h1>
+        <h2>Electronic Character Sheet</h2>
+    </header>
+
+    <main>
+
+        <section class="character-info">
+
+            <label>
+                Name
+                <input type="text" id="characterName">
+            </label>
+
+            <label>
+                Race
+                <input type="text" id="race">
+            </label>
+
+            <label>
+                Gender / Pronouns
+                <input type="text" id="pronouns">
+            </label>
+
+            <label>
+                Level
+                <input type="number" id="level" value="1">
+            </label>
+
+            <label>
+                Crawler Number
+                <input type="text" id="crawlerNumber">
+            </label>
+
+            <label>
+                Class
+                <input type="text" id="characterClass">
+            </label>
+
+            <label>
+                Floor
+                <input type="number" id="floor" value="1">
+            </label>
+
+        </section>
+
+        <section class="stats">
+
+    <h2>STATS</h2>
+
+    <div class="stat-card">
+        <h3>STRENGTH</h3>
+
+        <div class="stat-values">
+            <label>
+                Unenhanced
+                <input type="number" id="strengthUnenhanced">
+            </label>
+
+            <label>
+                Enhanced
+                <input type="number" id="strengthEnhanced">
+            </label>
+        </div>
+
+        <div class="stat-mod">
+            STR MOD <span id="strengthMod">—</span>
+        </div>
+    </div>
+
+
+    <div class="stat-card">
+        <h3>INTELLIGENCE</h3>
+
+        <div class="stat-values">
+            <label>
+                Unenhanced
+                <input type="number" id="intelligenceUnenhanced">
+            </label>
+
+            <label>
+                Enhanced
+                <input type="number" id="intelligenceEnhanced">
+            </label>
+        </div>
+
+        <div class="stat-mod">
+            INT MOD <span id="intelligenceMod">—</span>
+        </div>
+    </div>
+
+
+    <div class="stat-card">
+        <h3>CONSTITUTION</h3>
+
+        <div class="stat-values">
+            <label>
+                Unenhanced
+                <input type="number" id="constitutionUnenhanced">
+            </label>
+
+            <label>
+                Enhanced
+                <input type="number" id="constitutionEnhanced">
+            </label>
+        </div>
+
+        <div class="stat-mod">
+            CON MOD <span id="constitutionMod">—</span>
+        </div>
+    </div>
+
+
+    <div class="stat-card">
+        <h3>DEXTERITY</h3>
+
+        <div class="stat-values">
+            <label>
+                Unenhanced
+                <input type="number" id="dexterityUnenhanced">
+            </label>
+
+            <label>
+                Enhanced
+                <input type="number" id="dexterityEnhanced">
+            </label>
+        </div>
+
+        <div class="stat-mod">
+            DEX MOD <span id="dexterityMod">—</span>
+        </div>
+    </div>
+
+
+    <div class="stat-card">
+        <h3>CHARISMA</h3>
+
+        <div class="stat-values">
+            <label>
+                Unenhanced
+                <input type="number" id="charismaUnenhanced">
+            </label>
+
+            <label>
+                Enhanced
+                <input type="number" id="charismaEnhanced">
+            </label>
+        </div>
+
+        <div class="stat-mod">
+            CHA MOD <span id="charismaMod">—</span>
+        </div>
+    </div>
+
+</section>
+<!-- ---------- HEALTH & MANA ---------- -->
+
+<section class="resources">
+
+    <h2>HEALTH & MANA</h2>
+
+    <div class="health-card">
+
+        <div class="resource-title">
+            <h3>HEALTH</h3>
+            <span>
+                HB VALUE:
+                <strong id="hbValue">—</strong>
+            </span>
+        </div>
+
+        <div class="health-blocks" id="healthBlocks">
+
+            <button type="button" data-health="10">10%</button>
+            <button type="button" data-health="20">20%</button>
+            <button type="button" data-health="30">30%</button>
+            <button type="button" data-health="40">40%</button>
+            <button type="button" data-health="50">50%</button>
+            <button type="button" data-health="60">60%</button>
+            <button type="button" data-health="70">70%</button>
+            <button type="button" data-health="80">80%</button>
+            <button type="button" data-health="90">90%</button>
+            <button type="button" data-health="100">100%</button>
+
+        </div>
+
+        <div class="health-summary">
+            <span>Current: <strong id="currentHealthDisplay">100%</strong></span>
+            <span>HB Remaining: <strong id="hbRemaining">10</strong></span>
+        </div>
+
+    </div>
+
+
+    <div class="mana-card">
+
+        <h3>MANA</h3>
+
+        <div class="mana-values">
+
+            <label>
+                Current
+                <input type="number" id="currentMana" min="0">
+            </label>
+
+            <div class="max-mana">
+                <span>MAX</span>
+                <strong id="maxMana">—</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+    </main>
+<!-- ---------- SKILLS & SPELLS ---------- -->
+
+<section class="skills-section">
+
+    <div class="section-heading">
+        <h2>SKILLS & SPELLS</h2>
+        <button type="button" id="addSkillButton">
+            + ADD SKILL / SPELL
+        </button>
+    </div>
+
+    <div id="skillForm" class="skill-form" hidden>
+
+        <h3>NEW SKILL / SPELL</h3>
+
+        <div class="skill-form-grid">
+
+            <label>
+                Name
+                <input type="text" id="skillName">
+
+            </label>
+
+<label>
+    Source
+    <select id="skillSource">
+        <option value="RAW">RAW</option>
+        <option value="Custom*">Custom*</option>
+    </select>
+</label>
+
+            <label>
+                Type
+                <select id="skillType">
+                    <option value="Skill">Skill</option>
+                    <option value="Spell">Spell</option>
+                </select>
+            </label>
+
+            <label>
+                Rank
+                <input type="text" id="skillRank"
+                       placeholder="U or number">
+            </label>
+
+            <label>
+                Enhanced Rank
+                <input type="text" id="skillEnhancedRank"
+                       placeholder="U or number">
+            </label>
+
+            <label>
+                Stat
+                <select id="skillStat">
+                    <option value="">None</option>
+                    <option value="STR">STR</option>
+                    <option value="INT">INT</option>
+                    <option value="CON">CON</option>
+                    <option value="DEX">DEX</option>
+                    <option value="CHA">CHA</option>
+                </select>
+            </label>
+
+        </div>
+
+        <div class="skill-form-actions">
+            <button type="button" id="saveSkillButton">
+                SAVE
+            </button>
+
+            <button type="button" id="cancelSkillButton">
+                CANCEL
+            </button>
+        </div>
+
+    </div>
+    
+<div class="skill-search-controls">
+
+    <input type="search" id="skillSearch"
+           placeholder="Search skills, spells, tags...">
+
+    <select id="skillTypeFilter">
+        <option value="">All Types</option>
+        <option value="Skill">Skills</option>
+        <option value="Spell">Spells</option>
+    </select>
+
+    <select id="skillStatFilter">
+        <option value="">All Stats</option>
+        <option value="STR">STR</option>
+        <option value="DEX">DEX</option>
+        <option value="INT">INT</option>
+        <option value="CON">CON</option>
+        <option value="CHA">CHA</option>
+    </select>
+
+    <select id="skillSourceFilter">
+        <option value="">RAW & Custom</option>
+        <option value="RAW">RAW</option>
+        <option value="Custom*">Custom*</option>
+    </select>
+
+    <select id="skillTagFilter">
+        <option value="">All Tags</option>
+    </select>
+
+</div>
+
+
+    <div class="skill-table-wrapper">
+
+        <table class="skill-table">
+
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Rank</th>
+                    <th>Enhanced</th>
+                    <th>Stat</th>
+                    <th>Mod</th>
+                    <th>✓</th>
+                </tr>
+            </thead>
+
+            <tbody id="skillTableBody">
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+<!-- ---------- INVENTORY ---------- -->
+
+<section class="inventory-section">
+
+    <div class="section-heading">
+        <h2>INVENTORY</h2>
+
+        <button type="button" id="addInventoryButton">
+            + ADD ITEM
+        </button>
+    </div>
+
+    <!-- NEW ITEM FORM -->
+
+    <form id="inventoryAddForm" class="inventory-add-form" hidden>
+
+        <label>
+            Item Name
+            <input type="text" id="newItemName"
+                   placeholder="Item name" required>
+        </label>
+
+        <label>
+            Quantity
+            <input type="number" id="newItemQuantity"
+                   min="0" step="1" value="1" required>
+        </label>
+
+        <div class="inventory-form-actions">
+            <button type="submit">SAVE ITEM</button>
+            <button type="button" id="cancelInventoryAdd">
+                CANCEL
+            </button>
+        </div>
+
+    </form>
+
+    <!-- ITEM LIST -->
+
+<div class="inventory-list-controls">
+    <label>
+        <input type="checkbox" id="showHiddenInventory">
+        Show Hidden Items
+    </label>
+</div>
+
+    <div id="inventoryList" class="inventory-list"></div>
+
+</section>
+
+<!-- QUANTITY EDITOR -->
+
+<div id="inventoryOverlay" class="inventory-overlay" hidden></div>
+
+<aside id="inventorySidebar" class="inventory-sidebar" hidden>
+
+    <div class="sidebar-header">
+        <h2 id="inventorySidebarTitle">Item</h2>
+
+        <button type="button" id="closeInventorySidebar"
+                aria-label="Close item details">✕</button>
+    </div>
+
+
+<!-- INVENTORY ITEM DETAILS -->
+
+<div id="inventoryItemDetails">
+
+    <div id="inventoryItemTags" class="inventory-tag-list"></div>
+
+    <div id="inventoryItemDescription"
+         class="inventory-description"></div>
+
+    <div class="inventory-detail-actions">
+        <button type="button" id="editInventoryItem">
+            EDIT
+        </button>
+
+        <button type="button" id="pinInventoryItem">
+            PIN
+        </button>
+
+        <button type="button" id="hideInventoryItem">
+            HIDE
+        </button>
+
+        <button type="button" id="duplicateInventoryItem">
+            DUPLICATE
+        </button>
+    </div>
+
+</div>
+
+<!-- INVENTORY ITEM EDITOR -->
+
+<form id="inventoryEditForm" hidden>
+
+    <label>
+        Item Name
+        <input type="text" id="editInventoryName" required>
+    </label>
+
+    <label>
+        Location
+        <select id="editInventoryLocation">
+            <option value="Inventory">Inventory</option>
+            <option value="Hotlist">Hotlist</option>
+            <option value="Equipped">Equipped</option>
+        </select>
+    </label>
+
+    <label>
+        Equipment Slot
+        <select id="editInventorySlot">
+            <option value="">None</option>
+            <option value="Weapon">Weapon</option>
+            <option value="Shield">Shield</option>
+            <option value="Head">Head</option>
+            <option value="Torso">Torso</option>
+            <option value="Arms">Arms</option>
+            <option value="Hands/Holding">Hands/Holding</option>
+            <option value="Legs">Legs</option>
+            <option value="Feet">Feet</option>
+            <option value="Accessories">Accessories</option>
+        </select>
+        
+<label id="inventoryWeaponHandsField" hidden>
+    Hands Required
+
+    <select id="editInventoryHands">
+        <option value="">Unspecified</option>
+        <option value="1">One-handed</option>
+        <option value="2">Two-handed</option>
+        <option value="versatile">Versatile / Either</option>
+    </select>
+</label>
+
+    </label>
+
+    <label>
+        Tags
+        <div id="inventoryEditTags" class="inventory-tag-list"></div>
+
+        <div class="inventory-tag-entry">
+            <input type="text" id="inventoryTagInput"
+                   list="inventoryTagSuggestions"
+                   placeholder="Search or create a tag">
+
+            <datalist id="inventoryTagSuggestions"></datalist>
+
+            <button type="button" id="addInventoryTag">
+                + ADD
+            </button>
+        </div>
+    </label>
+
+    <label>
+        Description
+        <textarea id="editInventoryDescription"
+                  rows="6"></textarea>
+    </label>
+
+    <div class="inventory-detail-actions">
+        <button type="submit" class="primary-action">
+            SAVE CHANGES
+        </button>
+
+        <button type="button" id="cancelInventoryEdit">
+            CANCEL
+        </button>
+    </div>
+
+</form>
+    
+<div class="inventory-quantity-current">
+
+    <span>CURRENT QUANTITY</span>
+
+    <div class="inventory-quantity-heading">
+        <strong id="inventoryCurrentQuantity">0</strong>
+
+        <button type="button" id="undoInventoryQuantity"
+                disabled>
+            ↶ UNDO
+        </button>
+    </div>
+
+</div>
+
+
+    <h3>ADJUST QUANTITY</h3>
+
+    <div class="quantity-modes">
+        <button type="button" class="quantity-mode active"
+                data-mode="set">SET</button>
+
+        <button type="button" class="quantity-mode"
+                data-mode="add">+ ADD</button>
+
+        <button type="button" class="quantity-mode"
+                data-mode="subtract">− SUBTRACT</button>
+    </div>
+
+    <form id="inventoryQuantityForm">
+
+        <label for="inventoryQuantityAmount">Amount</label>
+
+        <div class="quantity-input-row">
+            <input type="number" id="inventoryQuantityAmount"
+                   min="0" step="1" placeholder="Enter amount" required>
+
+            <button type="submit" class="primary-action">
+                APPLY
+            </button>
+        </div>
+
+        <p id="inventoryQuantityPreview"></p>
+        <p id="inventoryQuantityError" role="alert"></p>
+
+    </form>
+
+</aside>
+
+<!-- EQUIPPED -->
+
+<section class="inventory-location-section" id="equippedSection">
+    <h2>EQUIPPED</h2>
+
+    <div id="equippedList" class="equipped-list"></div>
+</section>
+
+<!-- HOTLIST -->
+
+<section class="inventory-location-section" id="hotlistSection">
+    <h2>HOTLIST</h2>
+
+    <div id="hotlistList" class="inventory-list"></div>
+</section>
+
+<!-- SKILL DETAILS SIDEBAR -->
+
+<div id="skillOverlay" class="skill-overlay" hidden></div>
+
+<aside id="skillSidebar" class="skill-sidebar" hidden>
+
+    <div class="sidebar-header">
+        <h2 id="sidebarTitle">Skill Details</h2>
+
+        <button type="button" id="closeSkillSidebar"
+                aria-label="Close skill details">✕</button>
+    </div>
+
+    <div id="skillDetailView"></div>
+
+    <form id="skillEditForm" hidden>
+
+        <div class="sidebar-fields">
+
+            <label>
+                Name
+                <input type="text" id="editSkillName" required>
+            </label>
+
+            <label>
+                Type
+                <select id="editSkillType">
+                    <option value="Skill">Skill</option>
+                    <option value="Spell">Spell</option>
+                </select>
+            </label>
+
+            <label>
+                Source
+                <select id="editSkillSource">
+                    <option value="RAW">RAW</option>
+                    <option value="Custom*">Custom*</option>
+                </select>
+            </label>
+
+            <div class="sidebar-two-columns">
+                <label>
+                    Rank
+                    <input type="text" id="editSkillRank"
+                           placeholder="U or number">
+                </label>
+
+                <label>
+                    Enhanced Rank
+                    <input type="text" id="editSkillEnhancedRank"
+                           placeholder="U or number">
+                </label>
+            </div>
+
+            <label>
+                Enhanced Rank Note
+                <input type="text" id="editSkillEnhancedNote"
+                       placeholder="Why is this rank enhanced?">
+            </label>
+
+            <label>
+                Stat
+                <select id="editSkillStat">
+                    <option value="">None</option>
+                    <option value="STR">STR</option>
+                    <option value="INT">INT</option>
+                    <option value="CON">CON</option>
+                    <option value="DEX">DEX</option>
+                    <option value="CHA">CHA</option>
+                </select>
+            </label>
+
+            <label>
+                
+<div class="tag-editor">
+    <label for="skillTagInput">Tags</label>
+
+    <div id="selectedSkillTags" class="skill-detail-tags"></div>
+
+    <div class="tag-input-row">
+        <input type="text" id="skillTagInput"
+               placeholder="Search or create a tag"
+               autocomplete="off">
+
+        <button type="button" id="addCustomTagButton">
+            + ADD
+        </button>
+    </div>
+
+    <div id="skillTagSuggestions" class="tag-suggestions" hidden></div>
+</div>
+
+            </label>
+
+            <label>
+                Damage Effect: Associated Attack
+                <input type="text" id="editSkillDamageEffect"
+                       placeholder="e.g. Foot Soldier">
+            </label>
+
+            <label>
+                Favored: Class
+                <input type="text" id="editSkillFavored"
+                       placeholder="e.g. Bard">
+            </label>
+
+            <div class="sidebar-two-columns">
+                <label>
+                    Mana Cost
+                    <input type="text" id="editSkillManaCost">
+                </label>
+
+                <label>
+                    Cooldown
+                    <input type="text" id="editSkillCooldown">
+                </label>
+
+                <label>
+                    Duration
+                    <input type="text" id="editSkillDuration">
+                </label>
+
+                <label>
+                    Range
+                    <input type="text" id="editSkillRange">
+                </label>
+            </div>
+
+            <label>
+                Limitations
+                <textarea id="editSkillLimitations" rows="3"></textarea>
+            </label>
+
+            <label>
+                Description
+                <textarea id="editSkillDescription" rows="6"></textarea>
+            </label>
+
+            <label>
+                Rank 5 Upgrade
+                <textarea id="editSkillRank5" rows="3"></textarea>
+            </label>
+
+            <label>
+                Rank 10 Upgrade
+                <textarea id="editSkillRank10" rows="3"></textarea>
+            </label>
+
+            <label>
+                Rank 15 Upgrade
+                <textarea id="editSkillRank15" rows="3"></textarea>
+            </label>
+
+        </div>
+
+        <div class="sidebar-actions">
+            <button type="submit" class="primary-action">SAVE CHANGES</button>
+            <button type="button" id="cancelSkillEdit">CANCEL</button>
+        </div>
+
+    </form>
+
+    <div id="skillViewActions" class="sidebar-actions">
+        <button type="button" id="editSkillButton"
+                class="primary-action">EDIT</button>
+        <button type="button" id="deleteSkillButton"
+                class="danger-action">DELETE</button>
+    </div>
+
+</aside>
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>

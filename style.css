@@ -1,0 +1,1444 @@
+/* ---------- WHOLE PAGE ---------- */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background-color: #eeeeee;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #111111;
+}
+
+
+/* ---------- HEADER ---------- */
+
+header {
+    background-color: #111111;
+    color: white;
+    padding: 18px 30px;
+    border-bottom: 6px solid #d62828;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 30px;
+}
+
+header h2 {
+    margin: 4px 0 0 0;
+    font-size: 14px;
+    font-weight: normal;
+    color: #cccccc;
+}
+
+
+/* ---------- MAIN SHEET ---------- */
+
+main {
+    max-width: 1200px;
+    margin: 25px auto;
+    padding: 25px;
+    background-color: white;
+}
+
+
+/* ---------- CHARACTER INFO ---------- */
+
+.character-info {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.5fr 0.7fr;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+
+/* ---------- INPUT BOXES ---------- */
+
+input {
+    width: 100%;
+    padding: 9px;
+
+    border: 2px solid #222222;
+    background-color: #fafafa;
+
+    font-size: 16px;
+}
+
+input:focus {
+    outline: 3px solid #e6b422;
+}
+
+
+/* ---------- STATS ---------- */
+
+.stats {
+    border-top: 8px solid #111111;
+    padding-top: 15px;
+
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 15px;
+}
+
+.stats h2 {
+    grid-column: 1 / -1;
+
+    margin: 0;
+
+    background-color: #111111;
+    color: white;
+
+    padding: 7px 12px;
+
+    font-size: 18px;
+}
+/* ---------- STAT CARDS ---------- */
+
+.stat-card {
+    border: 2px solid #222222;
+    padding: 12px;
+    min-width: 0;
+}
+
+.stat-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+}
+
+.stat-values {
+    display: flex;
+    gap: 10px;
+}
+
+.stat-values label {
+    flex: 1;
+}
+
+.stat-values input {
+    width: 100%;
+    max-width: 90px;
+}
+
+.stat-mod {
+    margin-top: 12px;
+    padding-top: 8px;
+
+    border-top: 1px solid #999999;
+
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.stat-mod span {
+    float: right;
+    font-size: 18px;
+}
+
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width: 750px) {
+
+    main {
+        margin: 0;
+        padding: 15px;
+    }
+
+    .character-info {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-values {
+        justify-content: flex-start;
+    }
+
+    .stat-values label {
+        flex: 0 1 110px;
+    }
+}
+/* ---------- HEALTH & MANA ---------- */
+
+.resources {
+    margin-top: 25px;
+
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 15px;
+}
+
+.resources > h2 {
+    grid-column: 1 / -1;
+
+    margin: 0;
+
+    background-color: #111111;
+    color: white;
+
+    padding: 7px 12px;
+
+    font-size: 18px;
+}
+
+.health-card,
+.mana-card {
+    border: 2px solid #222222;
+    padding: 14px;
+}
+
+.resource-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.resource-title h3,
+.mana-card h3 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+}
+
+.resource-title span {
+    font-size: 12px;
+}
+
+
+/* ---------- HEALTH BLOCKS ---------- */
+
+.health-blocks {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 4px;
+}
+
+.health-blocks button {
+    min-height: 45px;
+
+    border: 2px solid #222222;
+
+    background-color: #eeeeee;
+
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.health-blocks button.active {
+    background-color: #5fa85f;
+}
+
+.health-blocks button:hover {
+    outline: 2px solid #e6b422;
+}
+
+.health-summary {
+    display: flex;
+    justify-content: space-between;
+
+    margin-top: 10px;
+
+    font-size: 12px;
+}
+
+
+/* ---------- MANA ---------- */
+
+.mana-values {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+}
+
+.mana-values label {
+    width: 100px;
+}
+
+.max-mana {
+    min-width: 80px;
+}
+
+.max-mana span {
+    display: block;
+
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.max-mana strong {
+    display: block;
+
+    margin-top: 6px;
+
+    font-size: 24px;
+}
+
+
+/* ---------- RESOURCE MOBILE ---------- */
+
+@media (max-width: 750px) {
+
+    .resources {
+        grid-template-columns: 1fr;
+    }
+
+    .health-blocks {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+/* ---------- SKILLS & SPELLS ---------- */
+
+.skills-section {
+    margin-top: 25px;
+}
+
+.section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+
+    background: #111111;
+    color: white;
+    padding: 8px 12px;
+}
+
+.section-heading h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+button {
+    cursor: pointer;
+}
+
+#addSkillButton,
+#saveSkillButton {
+    background: #d62828;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-weight: bold;
+}
+
+.skill-form {
+    margin-top: 15px;
+    padding: 18px;
+    border: 2px solid #222222;
+    background: #f7f7f7;
+}
+
+.skill-form[hidden] {
+    display: none;
+}
+
+.skill-form h3 {
+    margin-top: 0;
+}
+
+.skill-form-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 0.7fr 0.9fr 0.7fr;
+    gap: 12px;
+}
+
+.skill-form select {
+    width: 100%;
+    padding: 9px;
+    border: 2px solid #222222;
+    background: white;
+    font-size: 16px;
+}
+
+.skill-form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+#cancelSkillButton {
+    padding: 10px 15px;
+    border: 2px solid #222222;
+    background: white;
+    font-weight: bold;
+}
+
+/* ---------- SKILL TABLE ---------- */
+
+.skill-table-wrapper {
+    margin-top: 15px;
+    overflow-x: auto;
+}
+
+.skill-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.skill-table th {
+    background: #222222;
+    color: white;
+    padding: 10px;
+    text-align: left;
+    font-size: 12px;
+}
+
+.skill-table td {
+    border-bottom: 1px solid #cccccc;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.skill-table tbody tr:nth-child(even) {
+    background: #f2f2f2;
+}
+
+.skill-table tbody tr:hover {
+    background: #fff3d6;
+}
+
+.skill-table td:first-child {
+    font-weight: bold;
+}
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width: 750px) {
+
+    .section-heading {
+        flex-wrap: wrap;
+    }
+
+    .skill-form-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .skill-form-grid label:first-child {
+        grid-column: 1 / -1;
+    }
+
+    .skill-table th,
+    .skill-table td {
+        padding: 7px 5px;
+        font-size: 12px;
+    }
+}
+
+/* ---------- SKILL SIDEBAR ---------- */
+
+.skill-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 100;
+}
+
+.skill-overlay[hidden],
+.skill-sidebar[hidden],
+#skillEditForm[hidden],
+#skillDetailView[hidden],
+#skillViewActions[hidden] {
+    display: none;
+}
+
+.skill-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(480px, 100%);
+    background: #ffffff;
+    z-index: 101;
+    overflow-y: auto;
+    box-shadow: -6px 0 25px rgba(0,0,0,0.3);
+    padding: 20px;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 4px solid #d62828;
+    margin-bottom: 18px;
+}
+
+.sidebar-header h2 {
+    margin: 0 0 12px;
+    font-size: 22px;
+    overflow-wrap: anywhere;
+}
+
+#closeSkillSidebar {
+    border: 0;
+    background: #eeeeee;
+    padding: 8px 12px;
+    font-size: 18px;
+}
+
+.sidebar-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.sidebar-fields input,
+.sidebar-fields select,
+.sidebar-fields textarea {
+    width: 100%;
+    padding: 9px;
+    border: 2px solid #222222;
+    background: #fafafa;
+    font: inherit;
+}
+
+.sidebar-fields textarea {
+    resize: vertical;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.sidebar-two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.sidebar-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 22px;
+    flex-wrap: wrap;
+}
+
+.sidebar-actions button {
+    padding: 11px 15px;
+    font-weight: bold;
+    border: 2px solid #222222;
+}
+
+.primary-action {
+    background: #d62828;
+    color: white;
+}
+
+.danger-action {
+    background: white;
+    color: #b00020;
+}
+
+.skill-detail-section {
+    margin: 18px 0;
+}
+
+.skill-detail-section h3 {
+    font-size: 12px;
+    text-transform: uppercase;
+    margin: 0 0 6px;
+    color: #666666;
+}
+
+.skill-detail-section p {
+    margin: 0;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.skill-detail-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin: 12px 0;
+}
+
+.skill-detail-tag {
+    padding: 5px 9px;
+    background: #eeeeee;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.skill-table tbody tr {
+    cursor: pointer;
+}
+
+.skill-table tbody tr:focus-visible {
+    outline: 3px solid #e6b422;
+    outline-offset: -3px;
+}
+
+@media (max-width: 750px) {
+    .skill-sidebar {
+        width: 100%;
+        padding: 16px;
+    }
+}
+
+/* ---------- SKILL SEARCH & FILTERS ---------- */
+
+.skill-search-controls {
+    display: grid;
+    grid-template-columns: 2fr repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.skill-search-controls input,
+.skill-search-controls select {
+    min-width: 0;
+    width: 100%;
+    padding: 9px;
+    border: 1px solid #999;
+    background: white;
+    font-size: 13px;
+}
+
+/* ---------- TAG EDITOR ---------- */
+
+.tag-editor {
+    position: relative;
+}
+
+.tag-editor > label {
+    display: block;
+    margin-bottom: 6px;
+}
+
+.tag-input-row {
+    display: flex;
+    gap: 8px;
+}
+
+.tag-input-row input {
+    flex: 1;
+    min-width: 0;
+}
+
+#addCustomTagButton {
+    padding: 8px 12px;
+    background: #222;
+    color: white;
+    border: none;
+    font-weight: bold;
+}
+
+.skill-detail-tag button {
+    margin-left: 6px;
+    border: none;
+    background: transparent;
+    color: #a00000;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.tag-suggestions {
+    margin-top: 5px;
+    border: 1px solid #aaa;
+    background: white;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.tag-suggestions[hidden] {
+    display: none;
+}
+
+.tag-suggestions button {
+    display: block;
+    width: 100%;
+    padding: 9px;
+    border: none;
+    border-bottom: 1px solid #eee;
+    background: white;
+    text-align: left;
+}
+
+.tag-suggestions button:hover {
+    background: #eee;
+}
+
+@media (max-width: 850px) {
+    .skill-search-controls {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    #skillSearch {
+        grid-column: 1 / -1;
+    }
+}
+
+/* ---------- SKILLS & SPELLS LAYOUT POLISH ---------- */
+
+/* Match the centered character sheet */
+.skills-section {
+    width: calc(100% - 32px);
+    max-width: 1085px;
+    margin: 25px auto;
+    box-sizing: border-box;
+}
+
+/* Give skill names more room */
+.skill-table {
+    table-layout: fixed;
+}
+
+.skill-table th:nth-child(1),
+.skill-table td:nth-child(1) {
+    width: 40%;
+}
+
+.skill-table th:nth-child(2),
+.skill-table td:nth-child(2) {
+    width: 11%;
+}
+
+.skill-table th:nth-child(3),
+.skill-table td:nth-child(3) {
+    width: 16%;
+}
+
+.skill-table th:nth-child(4),
+.skill-table td:nth-child(4) {
+    width: 12%;
+}
+
+.skill-table th:nth-child(5),
+.skill-table td:nth-child(5) {
+    width: 12%;
+}
+
+.skill-table th:nth-child(6),
+.skill-table td:nth-child(6) {
+    width: 9%;
+}
+
+/* More comfortable clicking and tapping */
+.skill-table td {
+    padding: 13px 10px;
+}
+
+/* Keep long names from breaking the layout */
+.skill-table td:first-child {
+    overflow-wrap: anywhere;
+}
+
+/* Mobile adjustments */
+@media (max-width: 750px) {
+    .skills-section {
+        width: calc(100% - 20px);
+        margin: 20px auto;
+    }
+
+    .skill-table {
+        min-width: 480px;
+    }
+
+    .skill-table td {
+        padding: 11px 7px;
+    }
+}
+
+/* ---------- SKILL TABLE POLISH ---------- */
+
+/* Make the advancement button easier to click */
+.skill-table td:last-child button {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+
+    border: 2px solid #555;
+    border-radius: 4px;
+
+    background: white;
+    color: #111;
+
+    font-size: 21px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.skill-table td:last-child button:hover {
+    border-color: #d62828;
+    background: #fff0f0;
+}
+
+/* Enhanced Rank explanation indicator */
+.enhanced-rank-note {
+    display: inline-block;
+    margin-left: 7px;
+
+    color: #a82020;
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: help;
+    vertical-align: middle;
+}
+
+/* Slightly stronger visual emphasis for skill names */
+.skill-table td:first-child {
+    font-weight: 700;
+}
+
+/* Make rows more readable when hovering */
+.skill-table tbody tr:hover {
+    background: #e8e8e8;
+}
+
+/* Mobile-friendly advancement buttons */
+@media (max-width: 750px) {
+    .skill-table td:last-child button {
+        width: 38px;
+        height: 38px;
+    }
+}
+
+/* ---------- INVENTORY V0.6 ---------- */
+
+.inventory-section {
+    width: calc(100% - 32px);
+    max-width: 1085px;
+    margin: 25px auto;
+    box-sizing: border-box;
+}
+
+#addInventoryButton,
+.inventory-form-actions button[type="submit"] {
+    background: #d62828;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-weight: bold;
+}
+
+.inventory-add-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 12px;
+    padding: 16px;
+    margin-top: 12px;
+    border: 2px solid #222;
+    background: #f7f7f7;
+}
+
+.inventory-add-form[hidden] {
+    display: none;
+}
+
+.inventory-add-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.inventory-add-form label:first-child {
+    flex: 1;
+    min-width: 200px;
+}
+
+.inventory-add-form input {
+    padding: 9px;
+    border: 2px solid #222;
+    font: inherit;
+}
+
+#newItemQuantity {
+    width: 90px;
+}
+
+.inventory-form-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.inventory-form-actions button {
+    padding: 10px 14px;
+    font-weight: bold;
+}
+
+.inventory-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 12px;
+    margin-top: 14px;
+}
+
+.inventory-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+
+    background: #fff;
+    border: 1px solid #bbb;
+    color: #111;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+}
+
+.inventory-item:hover {
+    background: #fff3d6;
+    border-color: #555;
+}
+
+.inventory-item-name {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-weight: bold;
+}
+
+.inventory-item-quantity {
+    flex-shrink: 0;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.inventory-item-pin {
+    color: #a82020;
+    margin-right: 5px;
+}
+
+/* ---------- INVENTORY QUANTITY SIDEBAR ---------- */
+
+.inventory-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 110;
+}
+
+.inventory-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(480px, 100%);
+    box-sizing: border-box;
+    overflow-y: auto;
+    padding: 20px;
+
+    background: white;
+    box-shadow: -6px 0 25px rgba(0, 0, 0, 0.3);
+    z-index: 111;
+}
+
+.inventory-overlay[hidden],
+.inventory-sidebar[hidden] {
+    display: none;
+}
+
+.inventory-quantity-current {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 15px 0;
+}
+
+.inventory-quantity-current span {
+    font-size: 12px;
+    font-weight: bold;
+    color: #666;
+}
+
+.inventory-quantity-current strong {
+    font-size: 32px;
+}
+
+.quantity-modes {
+    display: flex;
+    gap: 6px;
+    margin: 12px 0;
+}
+
+.quantity-mode {
+    flex: 1;
+    padding: 10px 5px;
+    border: 2px solid #222;
+    background: white;
+    font-weight: bold;
+}
+
+.quantity-mode.active {
+    background: #222;
+    color: white;
+}
+
+.quantity-input-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.quantity-input-row input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px;
+    border: 2px solid #222;
+    font: inherit;
+}
+
+.quantity-input-row button {
+    padding: 10px 15px;
+    border: 2px solid #222;
+    font-weight: bold;
+}
+
+#inventoryQuantityPreview {
+    font-weight: bold;
+    color: #555;
+}
+
+#inventoryQuantityError {
+    color: #b00020;
+    font-weight: bold;
+}
+
+@media (max-width: 750px) {
+    .inventory-section {
+        width: calc(100% - 20px);
+        margin: 20px auto;
+    }
+
+    .inventory-list {
+        grid-template-columns: 1fr;
+    }
+
+    .inventory-sidebar {
+        width: 100%;
+        padding: 16px;
+    }
+}
+
+/* ---------- INVENTORY UNDO ---------- */
+
+.inventory-quantity-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+#undoInventoryQuantity {
+    padding: 9px 14px;
+    border: 2px solid #222;
+    background: white;
+    color: #111;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#undoInventoryQuantity:hover:not(:disabled) {
+    background: #eeeeee;
+}
+
+#undoInventoryQuantity:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+/* ---------- INVENTORY DETAILS V0.6.2 ---------- */
+
+.inventory-tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 12px 0;
+}
+
+.inventory-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 9px;
+    background: #eeeeee;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.inventory-tag button {
+    border: none;
+    background: transparent;
+    color: #b00020;
+    font-weight: bold;
+}
+
+.inventory-description {
+    margin: 15px 0;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.inventory-detail-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 15px 0 25px;
+}
+
+.inventory-detail-actions button {
+    padding: 9px 12px;
+    border: 2px solid #222;
+    background: white;
+    font-weight: bold;
+}
+
+.inventory-detail-actions .primary-action {
+    background: #d62828;
+    color: white;
+}
+
+#inventoryEditForm {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 25px;
+}
+
+#inventoryEditForm[hidden] {
+    display: none;
+}
+
+#inventoryEditForm label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+#inventoryEditForm input,
+#inventoryEditForm select,
+#inventoryEditForm textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 9px;
+    border: 2px solid #222;
+    font: inherit;
+}
+
+.inventory-tag-entry {
+    display: flex;
+    gap: 8px;
+}
+
+.inventory-tag-entry input {
+    min-width: 0;
+    flex: 1;
+}
+
+.inventory-tag-entry button {
+    padding: 8px 12px;
+    background: #222;
+    color: white;
+    border: none;
+    font-weight: bold;
+}
+
+.inventory-list-controls {
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+.inventory-item.is-hidden {
+    opacity: 0.45;
+    border-style: dashed;
+}
+
+.inventory-item.is-hidden .inventory-item-name {
+    text-decoration: line-through;
+}
+
+.inventory-item.is-hidden:hover {
+    opacity: 0.85;
+}
+
+#inventoryItemDetails[hidden] {
+    display: none;
+}
+
+/* ---------- EQUIPPED & HOTLIST V0.7 ---------- */
+
+.inventory-location-section {
+    max-width: 1085px;
+    margin: 28px auto;
+    padding: 22px;
+    background: #e8e8e8;
+    box-sizing: border-box;
+}
+
+.inventory-location-section h2 {
+    margin: 0 0 18px;
+    padding: 12px 16px;
+    background: #111;
+    color: white;
+}
+
+.equipped-list {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(min(100%, 260px), 1fr)
+    );
+    gap: 16px;
+}
+
+.equipment-slot-group {
+    background: white;
+    border: 2px solid #222;
+    padding: 12px;
+    min-width: 0;
+}
+
+.equipment-slot-group h3 {
+    margin: 0 0 10px;
+    font-size: 14px;
+    text-transform: uppercase;
+    border-bottom: 2px solid #222;
+    padding-bottom: 7px;
+}
+
+.equipment-slot-empty {
+    color: #888;
+    font-style: italic;
+    font-size: 13px;
+}
+
+.equipment-slot-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.equipment-slot-items button,
+#hotlistList button {
+    cursor: pointer;
+}
+
+.equipped-item {
+    width: 100%;
+    padding: 11px;
+    text-align: left;
+    border: 1px solid #aaa;
+    background: #f5f5f5;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+    font: inherit;
+}
+
+.equipped-item:hover {
+    background: #e2e2e2;
+}
+
+.equipped-item-name {
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+
+.equipped-item-detail {
+    font-size: 12px;
+    color: #666;
+}
+
+.inventory-location-section .inventory-item {
+    width: 100%;
+}
+
+#inventoryWeaponHandsField[hidden] {
+    display: none;
+}
+
+/* ---------- CHARACTER LIBRARY V0.8A ---------- */
+
+.character-library-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: #191919;
+    color: white;
+    overflow-y: auto;
+    padding: 45px 20px;
+    box-sizing: border-box;
+}
+
+.character-library-screen[hidden],
+#returnToCharacters[hidden] {
+    display: none;
+}
+
+.character-library-content {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.character-library-content h1 {
+    text-align: center;
+    margin: 0;
+    font-size: clamp(24px, 5vw, 42px);
+}
+
+.character-library-subtitle {
+    text-align: center;
+    color: #aaa;
+    letter-spacing: 3px;
+    margin-bottom: 40px;
+}
+
+.character-library-cards {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(min(100%, 230px), 1fr)
+    );
+    gap: 18px;
+}
+
+.character-library-card {
+    background: #303030;
+    color: white;
+    border: 2px solid #555;
+    padding: 25px;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+    min-height: 175px;
+}
+
+.character-library-card:hover {
+    border-color: #e63946;
+    background: #383838;
+}
+
+.character-library-card h2 {
+    margin: 0 0 15px;
+    overflow-wrap: anywhere;
+}
+
+.character-library-card p {
+    margin: 6px 0;
+    color: #ccc;
+}
+
+.character-library-card .crawler-label {
+    color: #ff5c65;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+#returnToCharacters {
+    position: relative;
+    z-index: 20;
+    display: block;
+    margin: 15px 20px;
+    padding: 11px 18px;
+    background: #222;
+    color: white;
+    border: 2px solid #222;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#returnToCharacters:hover {
+    background: #d62828;
+    border-color: #d62828;
+}
+
+/* ---------- CHARACTER MANAGEMENT V0.8B ---------- */
+
+.crawler-open-button {
+    width: 100%;
+    margin-top: 18px;
+    padding: 12px;
+    background: #d62828;
+    color: white;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.crawler-open-button:hover {
+    background: #ad2020;
+}
+
+.crawler-card-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.crawler-card-actions button {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 4px;
+    background: #555;
+    color: white;
+    border: none;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.crawler-card-actions button:hover {
+    background: #777;
+}
+
+.crawler-card-actions .crawler-delete-button {
+    background: #792525;
+}
+
+.crawler-card-actions .crawler-delete-button:hover {
+    background: #b32626;
+}
+
+.crawler-new-card {
+    border: 2px dashed #777;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.crawler-new-card:hover {
+    border-color: #ff5c65;
+}
+
+.crawler-new-plus {
+    font-size: 60px;
+    line-height: 1;
+    color: #ff5c65;
+    margin-bottom: 15px;
+}
+
+.crawler-new-card h2 {
+    margin-bottom: 10px;
+}
+
+@media (max-width: 420px) {
+    .crawler-card-actions {
+        flex-wrap: wrap;
+    }
+}
