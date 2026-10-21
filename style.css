@@ -1782,3 +1782,31 @@ main { position:relative; }
 .section-control-bar .attacks-header { padding-left:12px !important; margin:0; }
 .section-control-bar .attacks-header h2 { font-size:18px; }
 @media(max-width:650px) { .rest-actions { margin-left:0; } .rest-button { padding:6px 8px; } }
+
+/* VERSION 1.2.1 — TABLETOP POLISH */
+.enhanced-stat-caption { display:flex; align-items:center; gap:5px; line-height:1.2; }
+.enhanced-stat-caption .stat-note-button { color:#b11d1d; padding:0 2px; font-size:15px; line-height:1; }
+.enhanced-stat-caption .stat-note-button:hover { color:#d62828; }
+.crawler-profile-details .crawler-level-floor {
+  display:grid; grid-template-columns: 82px 66px 98px;
+  max-width:none; gap:8px; align-items:start; flex-shrink:0;
+}
+.crawler-level-floor label { min-width:0; }
+.crawler-level-floor input { width:100%; min-width:0; padding:7px 5px; }
+.section-control-bar .rest-actions .rest-button {
+  background:#d62828; color:white; border:0; padding:8px 12px;
+  font-weight:bold; font-size:12px; min-width:55px; white-space:nowrap;
+}
+.section-control-bar .rest-actions .rest-button:hover { background:#ac2020; }
+.health-blocks[data-health-tier="green"] button.active { background:#5fa85f; }
+.health-blocks[data-health-tier="yellow"] button.active { background:#f0cf50; }
+.health-blocks[data-health-tier="orange"] button.active { background:#ee9946; }
+.health-blocks[data-health-tier="red"] button.active { background:#e35a5a; }
+.hotlist-order-controls { gap:3px; }
+.hotlist-order-controls button { width:24px; min-width:24px; padding:2px; font-size:13px; }
+.skill-table th[data-skill-sort]:hover { background:#393939; }
+.skill-table th[data-skill-sort]:focus-visible { outline:2px solid #e6b422; outline-offset:-2px; }
+@media(max-width:750px) {
+  .crawler-profile-details .crawler-level-floor { grid-template-columns:82px 66px 98px; }
+  .section-control-bar .rest-actions .rest-button { padding:6px 8px; min-width:46px; }
+}

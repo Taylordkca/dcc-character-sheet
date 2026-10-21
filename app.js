@@ -3409,7 +3409,13 @@ statNames12.forEach(name => {
     character.stats[name].enhancedNote = next;
     saveCharacter(); refreshStatNotes12();
   });
-  label.appendChild(note);
+  const caption = document.createElement("span");
+  caption.className = "enhanced-stat-caption";
+  // Keep the existing label text beside the indicator, above the input.
+  const textNode = [...label.childNodes].find(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+  if(textNode) caption.appendChild(textNode);
+  caption.appendChild(note);
+  label.insertBefore(caption, input);
 });
 function refreshStatNotes12() {
   statNames12.forEach(name => {
@@ -3427,13 +3433,29 @@ const popularityLabel = document.createElement("label");
 popularityLabel.textContent = "Popularity";
 const popularityInput = document.createElement("input");
 popularityInput.type = "number"; popularityInput.id = "crawlerPopularity";
-popularityInput.step = "1";
+popularityInput.step = "1"; popularityInput.min = "0"; popularityInput.max = "999";
 popularityLabel.appendChild(popularityInput);
 document.getElementById("crawlerLevelFloor").appendChild(popularityLabel);
 popularityInput.addEventListener("input", () => { character.identity.popularity = popularityInput.value; saveCharacter(); });
 const selectCharacterBeforePopularity = selectCharacter;
 selectCharacter = function(id) { selectCharacterBeforePopularity(id); popularityInput.value = character.identity.popularity ?? ""; refreshStatNotes12(); };
 popularityInput.value = character.identity.popularity ?? "";
+[["level",999],["floor",18],["crawlerPopularity",999]].forEach(([id,max]) => {
+  const el = document.getElementById(id);
+  el.min = "0"; el.max = String(max);
+  el.addEventListener("change", () => {
+    if(el.value === "") return;
+    const number = Number(el.value);
+    if(!Number.isFinite(number)) return;
+    const clamped = Math.max(0, Math.min(max, Math.trunc(number)));
+    if(clamped !== number) {
+      el.value = String(clamped);
+      if(id === "crawlerPopularity") character.identity.popularity = el.value;
+      else character.identity[id] = el.value;
+      saveCharacter();
+    }
+  });
+});
 // Rest actions: 1 HB = 10 percentage points; all gains cap at maximum.
 const restBar = document.createElement("div");
 restBar.className = "rest-actions";
@@ -3470,3 +3492,13 @@ function expandSheetSection12(key) {
   document.getElementById(id).addEventListener("click", () => expandSheetSection12(section), true);
 });
 renderSkills(); renderInventory(); renderHotlist();
+
+// VERSION 1.2.1 — HEALTH COLOR BY REMAINING HB
+const updateResourcesBeforeColors = updateResources;
+updateResources = function() {
+  updateResourcesBeforeColors();
+  const percent = Number(character.resources.healthPercent) || 0;
+  const tier = percent >= 80 ? "green" : percent >= 50 ? "yellow" : percent >= 30 ? "orange" : "red";
+  document.getElementById("healthBlocks").dataset.healthTier = tier;
+};
+updateResources();

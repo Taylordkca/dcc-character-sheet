@@ -7,7 +7,7 @@
 
     <title>DCC Character Sheet</title>
 
-    <link rel="stylesheet" href="style.css?v=012">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -428,18 +428,17 @@
 </div>
 
 
-    <div class="skill-qol-bar"><label><input type="checkbox" id="showHiddenSkills"> Show Hidden Skills</label><button type="button" id="clearSkillFilters">CLEAR FILTERS</button></div>
-<div class="skill-table-wrapper">
+    <div class="skill-table-wrapper">
 
         <table class="skill-table">
 
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Rank</th>
-                    <th>Enhanced</th>
-                    <th>Stat</th>
-                    <th>Mod</th>
+                    <th data-skill-sort="name" role="button" aria-label="Sort by Name">Name</th>
+                    <th data-skill-sort="rank" role="button" aria-label="Sort by Rank">Rank</th>
+                    <th data-skill-sort="enhancedRank" role="button" aria-label="Sort by Enhanced">Enhanced</th>
+                    <th data-skill-sort="stat" role="button" aria-label="Sort by Stat">Stat</th>
+                    <th data-skill-sort="mod" role="button" aria-label="Sort by Mod">Mod</th>
                     <th>✓</th>
                 </tr>
             </thead>
@@ -585,7 +584,6 @@
     <!-- ITEM LIST -->
 
 <div class="inventory-list-controls">
-    <input type="search" id="inventorySearch" placeholder="Search items, tags, descriptions..." aria-label="Search inventory">
     <label>
         <input type="checkbox" id="showHiddenInventory">
         Show Hidden Items
@@ -914,11 +912,6 @@
             </div>
 
             <label>
-                AI Favor
-                <input type="text" id="editSkillAiFavor">
-            </label>
-
-            <label>
                 Limitations
                 <textarea id="editSkillLimitations" rows="3"></textarea>
             </label>
@@ -955,15 +948,13 @@
     <div id="skillViewActions" class="sidebar-actions">
         <button type="button" id="editSkillButton"
                 class="primary-action">EDIT</button>
-        <button type="button" id="pinSkillButton">PIN</button>
-        <button type="button" id="hideSkillButton">HIDE</button>
         <button type="button" id="deleteSkillButton"
                 class="danger-action">DELETE</button>
     </div>
 
 </aside>
 
-    <script src="app.js?v=012"></script>
+    <script src="app.js"></script>
 
 </body>
 
