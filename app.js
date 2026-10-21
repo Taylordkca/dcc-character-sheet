@@ -369,6 +369,11 @@ function updateResources() {
         .textContent = healthPercent / 10;
 
 
+    const tier = Number(healthPercent) >= 80 ? "green"
+        : Number(healthPercent) >= 50 ? "yellow"
+        : Number(healthPercent) >= 30 ? "orange" : "red";
+    document.getElementById("healthBlocks").dataset.healthTier = tier;
+
     const healthButtons =
         document.querySelectorAll(".health-blocks button");
 
@@ -996,6 +1001,22 @@ document.addEventListener("keydown", function (event) {
     if (event.key === "Escape" && !skillSidebar.hidden) {
         closeSkillSidebar();
     }
+});
+
+document.getElementById("duplicateSkillButton").addEventListener("click", () => {
+    const skill = getSelectedSkill();
+    if (!skill) return;
+    const duplicate = structuredClone(skill);
+    duplicate.id = crypto.randomUUID();
+    duplicate.name = (skill.name || "Unnamed Skill") + " (Copy)";
+    duplicate.pinned = false;
+    duplicate.hidden = false;
+    duplicate.advancementMarked = false;
+    character.skills.push(duplicate);
+    saveCharacter();
+    renderSkills();
+    selectedSkillId = duplicate.id;
+    showSkillDetails();
 });
 
 document.getElementById("deleteSkillButton")
@@ -1901,6 +1922,20 @@ document.getElementById("duplicateInventoryItem")
         // Open the newly created copy.
         openInventorySidebar(duplicate.id);
     });
+
+document.getElementById("deleteInventoryItem").addEventListener("click", () => {
+    const item = getSelectedInventoryItem();
+    if (!item) return;
+    if (item.systemId === "gold" || item.systemId === "misc-junk") {
+        alert("Gold and Misc Junk are protected system items.");
+        return;
+    }
+    if (!confirm("Delete " + (item.name || "this item") + "?")) return;
+    character.inventory = character.inventory.filter(entry => entry.id !== item.id);
+    saveCharacter();
+    closeInventorySidebar();
+    renderInventory();
+});
 
 document.getElementById("showHiddenInventory")
     .addEventListener("change", renderInventory);
@@ -3492,13 +3527,3 @@ function expandSheetSection12(key) {
   document.getElementById(id).addEventListener("click", () => expandSheetSection12(section), true);
 });
 renderSkills(); renderInventory(); renderHotlist();
-
-// VERSION 1.2.1 — HEALTH COLOR BY REMAINING HB
-const updateResourcesBeforeColors = updateResources;
-updateResources = function() {
-  updateResourcesBeforeColors();
-  const percent = Number(character.resources.healthPercent) || 0;
-  const tier = percent >= 80 ? "green" : percent >= 50 ? "yellow" : percent >= 30 ? "orange" : "red";
-  document.getElementById("healthBlocks").dataset.healthTier = tier;
-};
-updateResources();

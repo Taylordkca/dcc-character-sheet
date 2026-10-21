@@ -7,7 +7,7 @@
 
     <title>DCC Character Sheet</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=0124">
 </head>
 
 <body>
@@ -104,7 +104,7 @@
         </section>
         <div class="crawler-bottom-row">
           <div class="trophy-panel">
-            <div class="trophy-panel-title"><strong>TROPHIES</strong><button type="button" id="editTrophiesButton">EDIT TROPHIES</button></div>
+            <div class="trophy-panel-title"><strong>TROPHIES</strong><button type="button" id="editTrophiesButton">EDIT</button></div>
             <div id="trophyCounters" class="trophy-counters"></div>
           </div>
           <div id="crawlerLevelFloor" class="crawler-level-floor"></div>
@@ -428,17 +428,18 @@
 </div>
 
 
-    <div class="skill-table-wrapper">
+    <div class="skill-qol-bar"><label><input type="checkbox" id="showHiddenSkills"> Show Hidden Skills</label><button type="button" id="clearSkillFilters">CLEAR FILTERS</button></div>
+<div class="skill-table-wrapper">
 
         <table class="skill-table">
 
             <thead>
                 <tr>
-                    <th data-skill-sort="name" role="button" aria-label="Sort by Name">Name</th>
-                    <th data-skill-sort="rank" role="button" aria-label="Sort by Rank">Rank</th>
-                    <th data-skill-sort="enhancedRank" role="button" aria-label="Sort by Enhanced">Enhanced</th>
-                    <th data-skill-sort="stat" role="button" aria-label="Sort by Stat">Stat</th>
-                    <th data-skill-sort="mod" role="button" aria-label="Sort by Mod">Mod</th>
+                    <th data-skill-sort="name" role="button" tabindex="0" title="Click to sort">Name</th>
+                    <th data-skill-sort="rank" role="button" tabindex="0" title="Click to sort">Rank</th>
+                    <th data-skill-sort="enhancedRank" role="button" tabindex="0" title="Click to sort">Enhanced</th>
+                    <th data-skill-sort="stat" role="button" tabindex="0" title="Click to sort">Stat</th>
+                    <th data-skill-sort="mod" role="button" tabindex="0" title="Click to sort">Mod</th>
                     <th>✓</th>
                 </tr>
             </thead>
@@ -584,6 +585,7 @@
     <!-- ITEM LIST -->
 
 <div class="inventory-list-controls">
+    <input type="search" id="inventorySearch" placeholder="Search items, tags, descriptions..." aria-label="Search inventory">
     <label>
         <input type="checkbox" id="showHiddenInventory">
         Show Hidden Items
@@ -632,6 +634,9 @@
 
         <button type="button" id="duplicateInventoryItem">
             DUPLICATE
+        </button>
+        <button type="button" id="deleteInventoryItem" class="danger-action">
+            DELETE
         </button>
     </div>
 
@@ -912,6 +917,11 @@
             </div>
 
             <label>
+                AI Favor
+                <input type="text" id="editSkillAiFavor">
+            </label>
+
+            <label>
                 Limitations
                 <textarea id="editSkillLimitations" rows="3"></textarea>
             </label>
@@ -948,13 +958,16 @@
     <div id="skillViewActions" class="sidebar-actions">
         <button type="button" id="editSkillButton"
                 class="primary-action">EDIT</button>
+        <button type="button" id="pinSkillButton">PIN</button>
+        <button type="button" id="hideSkillButton">HIDE</button>
+        <button type="button" id="duplicateSkillButton">DUPLICATE</button>
         <button type="button" id="deleteSkillButton"
                 class="danger-action">DELETE</button>
     </div>
 
 </aside>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=0124"></script>
 
 </body>
 
