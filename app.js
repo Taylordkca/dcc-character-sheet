@@ -621,6 +621,9 @@ function getSkillStatMod(stat) {
 
 // DISPLAY SKILLS
 
+let skillSortColumn = "";
+let skillSortDirection = 1;
+
 
 function renderSkills() {
 
@@ -643,6 +646,8 @@ function renderSkills() {
         document.getElementById("skillTagFilter")?.value || "";
 
     const filteredSkills = character.skills.filter(skill => {
+        if (skill.pinned) return true;
+        if (skill.hidden && !document.getElementById("showHiddenSkills")?.checked) return false;
 
         const searchableText = [
             skill.name,
@@ -676,10 +681,22 @@ function renderSkills() {
         return true;
     });
 
+    filteredSkills.sort((a,b) => {
+        if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1;
+        if (a.pinned && b.pinned) return (a.pinOrder ?? 0) - (b.pinOrder ?? 0);
+        if (!skillSortColumn) return 0;
+        const getValue = s => skillSortColumn === "mod" ? getSkillStatMod(s.stat) : (s[skillSortColumn] ?? "");
+        const x = String(getValue(a)).trim(), y = String(getValue(b)).trim();
+        const xn = Number(x), yn = Number(y);
+        const cmp = x !== "" && y !== "" && Number.isFinite(xn) && Number.isFinite(yn)
+            ? xn - yn : x.localeCompare(y, undefined, {numeric:true, sensitivity:"base"});
+        return cmp * skillSortDirection;
+    });
     filteredSkills.forEach(skill => {
 
         const row = document.createElement("tr");
         row.tabIndex = 0;
+        row.classList.toggle("skill-hidden", !!skill.hidden);
 
         row.addEventListener("click", () => {
             openSkillSidebar(skill.id);
@@ -696,7 +713,7 @@ function renderSkills() {
 
         
 const values = [
-    getSkillDisplayName(skill),
+    (skill.pinned ? "📌 " : "") + getSkillDisplayName(skill) + (skill.hidden ? " (hidden)" : ""),
     skill.rank || "",
     skill.enhancedRank || "",
     skill.stat || "—",
@@ -785,6 +802,7 @@ const skillEditFields = {
     cooldown: "editSkillCooldown",
     duration: "editSkillDuration",
     range: "editSkillRange",
+    aiFavor: "editSkillAiFavor",
     limitations: "editSkillLimitations",
     description: "editSkillDescription",
     rank5: "editSkillRank5",
@@ -883,6 +901,8 @@ function showSkillDetails() {
 
     skillDetailView.appendChild(tagsContainer);
 
+    document.getElementById("pinSkillButton").textContent = skill.pinned ? "UNPIN" : "PIN";
+    document.getElementById("hideSkillButton").textContent = skill.hidden ? "UNHIDE" : "HIDE";
     addSkillDetail("Rank", skill.rank);
     addSkillDetail("Enhanced Rank", skill.enhancedRank);
     addSkillDetail("Enhanced Rank Note", skill.enhancedRankNote);
@@ -893,6 +913,7 @@ function showSkillDetails() {
     addSkillDetail("Cooldown", skill.cooldown);
     addSkillDetail("Duration", skill.duration);
     addSkillDetail("Range", skill.range);
+    addSkillDetail("AI Favor", skill.aiFavor);
 
     addSkillDetail("Limitations", skill.limitations);
     addSkillDetail("Description", skill.description);
@@ -1253,10 +1274,12 @@ function renderInventory() {
 
     inventoryList.replaceChildren();
 
+    const inventoryQuery = (document.getElementById("inventorySearch")?.value || "").trim().toLowerCase();
     const items = character.inventory
         
 .filter(item =>
     (item.location || "Inventory") === "Inventory" &&
+    (!inventoryQuery || [item.name, item.description, ...(item.tags || [])].join(" ").toLowerCase().includes(inventoryQuery)) &&
     (
         !item.hidden ||
         document.getElementById("showHiddenInventory").checked
@@ -1990,7 +2013,7 @@ function renderHotlist() {
 
     const hotlistItems = character.inventory.filter(
         item => item.location === "Hotlist" && !item.hidden
-    );
+    ).sort((a,b) => (a.hotlistOrder ?? 0) - (b.hotlistOrder ?? 0));
 
     // Informational only: 10 is a soft guideline, never a restriction.
     const hotlistHeader = document.querySelector(
@@ -2007,7 +2030,7 @@ function renderHotlist() {
         counter.title = 'Suggested hotlist size; no enforced limit';
     }
 
-    hotlistItems.forEach(item => {
+    hotlistItems.forEach((item, index) => {
         const button = document.createElement("button");
         button.type = "button";
         button.className = "inventory-item";
@@ -2027,7 +2050,28 @@ function renderHotlist() {
             openInventorySidebar(item.id);
         });
 
-        container.appendChild(button);
+        const controls = document.createElement("span");
+        controls.className = "hotlist-order-controls";
+        [["↑", -1], ["↓", 1]].forEach(([label, delta]) => {
+            const arrow = document.createElement("button");
+            arrow.type = "button";
+            arrow.textContent = label;
+            arrow.disabled = index + delta < 0 || index + delta >= hotlistItems.length;
+            arrow.title = label === "↑" ? "Move item up" : "Move item down";
+            arrow.addEventListener("click", () => {
+                const other = hotlistItems[index + delta];
+                hotlistItems.forEach((entry, i) => { entry.hotlistOrder = i; });
+                const temp = item.hotlistOrder;
+                item.hotlistOrder = other.hotlistOrder;
+                other.hotlistOrder = temp;
+                saveCharacter(); renderHotlist();
+            });
+            controls.appendChild(arrow);
+        });
+        const line = document.createElement("div");
+        line.className = "hotlist-order-row";
+        line.append(button, controls);
+        container.appendChild(line);
     });
 }
 
@@ -3300,3 +3344,129 @@ renderCrawlerVisuals();
 
 // Ensure the soft Hotlist count appears after movable headers are initialized.
 renderHotlist();
+
+// ------------------------------------
+// VERSION 1.2 — QUALITY OF LIFE
+// ------------------------------------
+const sortHeaders = document.querySelectorAll("[data-skill-sort]");
+sortHeaders.forEach(th => {
+  th.tabIndex = 0;
+  th.title = "Sort ascending / descending";
+  const sort = () => {
+    const key = th.dataset.skillSort;
+    skillSortDirection = skillSortColumn === key ? -skillSortDirection : 1;
+    skillSortColumn = key;
+    sortHeaders.forEach(header => header.removeAttribute("aria-sort"));
+    th.setAttribute("aria-sort", skillSortDirection === 1 ? "ascending" : "descending");
+    renderSkills();
+  };
+  th.addEventListener("click", sort);
+  th.addEventListener("keydown", e => {if(e.key === "Enter" || e.key === " "){e.preventDefault();sort();}});
+});
+document.getElementById("showHiddenSkills").addEventListener("change", renderSkills);
+document.getElementById("clearSkillFilters").addEventListener("click", () => {
+  ["skillSearch","skillTypeFilter","skillStatFilter","skillSourceFilter","skillTagFilter"].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = "";
+  });
+  document.getElementById("showHiddenSkills").checked = false;
+  skillSortColumn = ""; skillSortDirection = 1;
+  sortHeaders.forEach(th => th.removeAttribute("aria-sort"));
+  renderSkills();
+});
+document.getElementById("pinSkillButton").addEventListener("click", () => {
+  const skill = getSelectedSkill(); if(!skill) return;
+  skill.pinned = !skill.pinned;
+  if(skill.pinned) skill.pinOrder = Math.max(0, ...character.skills.map(s => Number(s.pinOrder) || 0)) + 1;
+  saveCharacter(); renderSkills(); showSkillDetails();
+});
+document.getElementById("hideSkillButton").addEventListener("click", () => {
+  const skill = getSelectedSkill(); if(!skill) return;
+  skill.hidden = !skill.hidden;
+  saveCharacter(); renderSkills(); showSkillDetails();
+});
+document.getElementById("inventorySearch").addEventListener("input", renderInventory);
+// Keep list filters clean when switching crawlers.
+const selectCharacterBeforeQol = selectCharacter;
+selectCharacter = function(id) {
+  document.getElementById("inventorySearch").value = "";
+  document.getElementById("showHiddenSkills").checked = false;
+  skillSortColumn = ""; skillSortDirection = 1;
+  sortHeaders.forEach(th => th.removeAttribute("aria-sort"));
+  selectCharacterBeforeQol(id);
+};
+// Enhanced-stat explanations: stored with each stat, never alter calculations.
+const statNames12 = ["strength","intelligence","constitution","dexterity","charisma"];
+statNames12.forEach(name => {
+  const input = document.getElementById(name + "Enhanced");
+  const label = input.closest("label");
+  const note = document.createElement("button");
+  note.type = "button"; note.className = "stat-note-button";
+  note.textContent = "ⓘ"; note.title = "Edit enhanced stat explanation";
+  note.addEventListener("click", () => {
+    const existing = character.stats[name].enhancedNote || "";
+    const next = prompt("Why is " + name.toUpperCase() + " enhanced?", existing);
+    if(next === null) return;
+    character.stats[name].enhancedNote = next;
+    saveCharacter(); refreshStatNotes12();
+  });
+  label.appendChild(note);
+});
+function refreshStatNotes12() {
+  statNames12.forEach(name => {
+    const btn = document.getElementById(name + "Enhanced").closest("label").querySelector(".stat-note-button");
+    const note = character.stats[name].enhancedNote || "";
+    btn.title = note || "Edit enhanced stat explanation";
+    btn.classList.toggle("has-note", !!note);
+  });
+}
+const displayCharacterBeforeQol = displayCharacter;
+displayCharacter = function() { displayCharacterBeforeQol(); refreshStatNotes12(); };
+refreshStatNotes12();
+// Popularity: same direct-save pattern as Level and Floor.
+const popularityLabel = document.createElement("label");
+popularityLabel.textContent = "Popularity";
+const popularityInput = document.createElement("input");
+popularityInput.type = "number"; popularityInput.id = "crawlerPopularity";
+popularityInput.step = "1";
+popularityLabel.appendChild(popularityInput);
+document.getElementById("crawlerLevelFloor").appendChild(popularityLabel);
+popularityInput.addEventListener("input", () => { character.identity.popularity = popularityInput.value; saveCharacter(); });
+const selectCharacterBeforePopularity = selectCharacter;
+selectCharacter = function(id) { selectCharacterBeforePopularity(id); popularityInput.value = character.identity.popularity ?? ""; refreshStatNotes12(); };
+popularityInput.value = character.identity.popularity ?? "";
+// Rest actions: 1 HB = 10 percentage points; all gains cap at maximum.
+const restBar = document.createElement("div");
+restBar.className = "rest-actions";
+const resourcesBar = sectionWrappers.get("resources")?.wrap.querySelector(".section-control-bar");
+if(resourcesBar) resourcesBar.insertBefore(restBar, resourcesBar.querySelector(".section-move-buttons"));
+function expandSheetSection12(key) {
+  const entry = sectionWrappers.get(key); if(!entry || !entry.section.hidden) return;
+  entry.section.hidden = false;
+  entry.toggle.textContent = "− Collapse";
+  entry.toggle.setAttribute("aria-label", "Collapse " + key);
+  saveSectionLayout();
+}
+[["1 HR", "hour"], ["SHORT", "short"], ["LONG", "long"]].forEach(([label, kind]) => {
+  const button = document.createElement("button"); button.type = "button";
+  button.textContent = label; button.className = "rest-button";
+  button.title = kind === "hour" ? "Restore 1 HB and 5 Mana" : kind === "short" ? "Restore 5 HB and half max Mana (minimum 10)" : "Restore full Health and Mana";
+  button.addEventListener("click", () => {
+    expandSheetSection12("resources");
+    const max = Number(character.stats.intelligence.enhanced);
+    const validMax = character.stats.intelligence.enhanced !== "" && Number.isFinite(max) && max >= 0;
+    const current = Math.max(0, Number(character.resources.currentMana) || 0);
+    const heal = kind === "long" ? 100 : kind === "short" ? 50 : 10;
+    character.resources.healthPercent = kind === "long" ? 100 : Math.min(100, Math.max(0, Number(character.resources.healthPercent) || 0) + heal);
+    if(validMax) {
+      const gain = kind === "long" ? max : kind === "short" ? Math.max(10, max / 2) : 5;
+      character.resources.currentMana = kind === "long" ? max : Math.min(max, current + gain);
+      document.getElementById("currentMana").value = character.resources.currentMana;
+    }
+    updateResources(); saveCharacter();
+  });
+  restBar.appendChild(button);
+});
+[["skills", "addSkillButton"], ["attacks", "addAttackButton"], ["inventory", "addInventoryButton"]].forEach(([section, id]) => {
+  document.getElementById(id).addEventListener("click", () => expandSheetSection12(section), true);
+});
+renderSkills(); renderInventory(); renderHotlist();

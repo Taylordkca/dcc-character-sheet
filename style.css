@@ -1758,3 +1758,27 @@ main { position:relative; }
 .defense-card details {
     margin-top: 8px;
 }
+/* VERSION 1.2 — QUALITY OF LIFE */
+.skill-qol-bar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; }
+.skill-qol-bar label { display:flex; flex-direction:row; align-items:center; gap:8px; }
+.skill-qol-bar input[type="checkbox"] { width:auto; }
+#clearSkillFilters { padding:9px 12px; font-weight:bold; border:1px solid #222; background:#fff; }
+.skill-table th[data-skill-sort] { cursor:pointer; user-select:none; }
+.skill-table th[aria-sort="ascending"]::after { content:" ↑"; }
+.skill-table th[aria-sort="descending"]::after { content:" ↓"; }
+.skill-table tr.skill-hidden { opacity:.5; }
+#inventorySearch { max-width:420px; min-width:180px; }
+.inventory-list-controls { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+.hotlist-order-row { display:flex; align-items:stretch; gap:6px; margin-bottom:6px; }
+.hotlist-order-row > .inventory-item { flex:1; min-width:0; }
+.hotlist-order-controls { display:flex; gap:4px; }
+.hotlist-order-controls button { width:34px; border:1px solid #444; background:#fff; font-weight:bold; }
+.hotlist-order-controls button:disabled { opacity:.3; }
+.stat-note-button { width:auto; align-self:flex-start; border:0; background:none; padding:2px 5px; font-size:17px; color:#888; cursor:pointer; }
+.stat-note-button.has-note { color:#b11d1d; }
+.rest-actions { display:flex; flex-wrap:wrap; gap:6px; margin-left:auto; }
+.rest-button { background:#d62828; color:#fff; border:0; padding:8px 12px; font-weight:bold; font-size:12px; }
+/* Align the ATTACKS title with all other movable headings. */
+.section-control-bar .attacks-header { padding-left:12px !important; margin:0; }
+.section-control-bar .attacks-header h2 { font-size:18px; }
+@media(max-width:650px) { .rest-actions { margin-left:0; } .rest-button { padding:6px 8px; } }
