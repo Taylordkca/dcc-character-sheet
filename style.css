@@ -1868,3 +1868,13 @@ main { position:relative; }
   .skill-qol-bar { gap:10px; }
   .advancement-filter-label { flex-wrap:wrap; }
 }
+
+/* v1.2.6 — one-line mobile rank + enhanced rank */
+.skill-mobile-enhanced { display:none; }
+@media (max-width:750px) {
+  .skill-table td:first-child { overflow:hidden; }
+  .skill-name-text { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .skill-table th:nth-child(2), .skill-table td:nth-child(2) { width:78px; }
+  .skill-table td.skill-rank-cell { white-space:nowrap; }
+  .skill-mobile-enhanced { display:inline; color:#b11d1d; font-weight:700; white-space:nowrap; }
+}

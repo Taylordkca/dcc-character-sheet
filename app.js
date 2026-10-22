@@ -735,6 +735,27 @@ values.forEach((value, index) => {
     const cell = document.createElement("td");
     cell.textContent = value;
 
+    // v1.2.6: mobile-only inline enhanced rank, preserving desktop columns.
+    if (index === 0) {
+        cell.title = skill.name || "";
+        const nameText = document.createElement("span");
+        nameText.className = "skill-name-text";
+        nameText.textContent = value;
+        cell.replaceChildren(nameText);
+    }
+    if (index === 1) {
+        cell.classList.add("skill-rank-cell");
+        if (skill.enhancedRank !== undefined && skill.enhancedRank !== null && String(skill.enhancedRank).trim() !== "") {
+            const enhancedInline = document.createElement("span");
+            enhancedInline.className = "skill-mobile-enhanced";
+            enhancedInline.textContent = "(" + String(skill.enhancedRank).trim() + ")";
+            if (skill.enhancedRankNote) {
+                enhancedInline.title = skill.enhancedRankNote;
+            }
+            cell.appendChild(enhancedInline);
+        }
+    }
+
     // Enhanced Rank is the third column.
     if (index === 2 && skill.enhancedRankNote) {
         const noteIcon = document.createElement("span");
