@@ -1843,3 +1843,28 @@ main { position:relative; }
 .section-control-bar .rest-actions {
   margin-right:12px;
 }
+
+/* v1.2.5: advancement review and one-click rank advancement */
+.skill-qol-bar { display:flex; align-items:center; flex-wrap:wrap; gap:12px; }
+.advancement-filter-label { display:flex; align-items:center; gap:7px; font-size:12px; font-weight:bold; }
+.advancement-filter-label select { min-width:128px; padding:7px; font-size:13px; }
+.sidebar-actions .rank-up-action { background:#fff; color:#b41c1c; border-color:#b41c1c; }
+.sidebar-actions .rank-up-action:hover { background:#fff0f0; }
+
+/* Mobile: prioritize skill name, rank, and advancement checkbox.
+   Other columns remain available in the skill details sidebar. */
+@media (max-width: 750px) {
+  .skill-table-wrapper { width:100%; max-width:100%; overflow-x:hidden; }
+  .skill-table { width:100%; min-width:0; table-layout:fixed; }
+  .skill-table th:nth-child(3), .skill-table td:nth-child(3),
+  .skill-table th:nth-child(4), .skill-table td:nth-child(4),
+  .skill-table th:nth-child(5), .skill-table td:nth-child(5) { display:none; }
+  .skill-table th:nth-child(1), .skill-table td:nth-child(1) { width: auto; }
+  .skill-table th:nth-child(2), .skill-table td:nth-child(2) { width:55px; }
+  .skill-table th:nth-child(6), .skill-table td:nth-child(6) { width:52px; }
+  .skill-table th, .skill-table td { padding:10px 6px; box-sizing:border-box; }
+  .skill-table td:first-child { overflow-wrap:anywhere; }
+  .skill-table td:last-child button { width:32px; height:32px; }
+  .skill-qol-bar { gap:10px; }
+  .advancement-filter-label { flex-wrap:wrap; }
+}

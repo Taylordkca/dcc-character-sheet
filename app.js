@@ -650,7 +650,11 @@ function renderSkills() {
     const tagFilter =
         document.getElementById("skillTagFilter")?.value || "";
 
+    const advancementFilter = document.getElementById("skillAdvancementFilter")?.value || "";
+
     const filteredSkills = character.skills.filter(skill => {
+        // When reviewing advancement, show ONLY marked skills, including pinned ones.
+        if (advancementFilter === "marked" && !skill.advancementMarked) return false;
         if (skill.pinned) return true;
         if (skill.hidden && !document.getElementById("showHiddenSkills")?.checked) return false;
 
@@ -690,7 +694,9 @@ function renderSkills() {
         if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1;
         if (a.pinned && b.pinned) return (a.pinOrder ?? 0) - (b.pinOrder ?? 0);
         if (!skillSortColumn) return 0;
-        const getValue = s => skillSortColumn === "mod" ? getSkillStatMod(s.stat) : (s[skillSortColumn] ?? "");
+        const getValue = s => skillSortColumn === "mod" ? getSkillStatMod(s.stat)
+            : skillSortColumn === "advancementMarked" ? (s.advancementMarked ? 1 : 0)
+            : (s[skillSortColumn] ?? "");
         const x = String(getValue(a)).trim(), y = String(getValue(b)).trim();
         const xn = Number(x), yn = Number(y);
         const cmp = x !== "" && y !== "" && Number.isFinite(xn) && Number.isFinite(yn)
@@ -1001,6 +1007,22 @@ document.addEventListener("keydown", function (event) {
     if (event.key === "Escape" && !skillSidebar.hidden) {
         closeSkillSidebar();
     }
+});
+
+document.getElementById("rankUpSkillButton").addEventListener("click", () => {
+    const skill = getSelectedSkill();
+    if (!skill) return;
+    const raw = String(skill.rank ?? "").trim();
+    // Untrained skills advance from U to Rank 1.
+    const current = raw.toUpperCase() === "U" || raw === "" ? 0 : Number(raw);
+    if (!Number.isFinite(current) || current < 0) {
+        alert("This skill's rank is not numeric. Please edit it manually.");
+        return;
+    }
+    skill.rank = String(current + 1);
+    saveCharacter();
+    renderSkills();
+    showSkillDetails();
 });
 
 document.getElementById("duplicateSkillButton").addEventListener("click", () => {
@@ -3399,8 +3421,9 @@ sortHeaders.forEach(th => {
   th.addEventListener("keydown", e => {if(e.key === "Enter" || e.key === " "){e.preventDefault();sort();}});
 });
 document.getElementById("showHiddenSkills").addEventListener("change", renderSkills);
+document.getElementById("skillAdvancementFilter").addEventListener("change", renderSkills);
 document.getElementById("clearSkillFilters").addEventListener("click", () => {
-  ["skillSearch","skillTypeFilter","skillStatFilter","skillSourceFilter","skillTagFilter"].forEach(id => {
+  ["skillSearch","skillTypeFilter","skillStatFilter","skillSourceFilter","skillTagFilter","skillAdvancementFilter"].forEach(id => {
     const el = document.getElementById(id); if(el) el.value = "";
   });
   document.getElementById("showHiddenSkills").checked = false;
@@ -3425,6 +3448,7 @@ const selectCharacterBeforeQol = selectCharacter;
 selectCharacter = function(id) {
   document.getElementById("inventorySearch").value = "";
   document.getElementById("showHiddenSkills").checked = false;
+  document.getElementById("skillAdvancementFilter").value = "";
   skillSortColumn = ""; skillSortDirection = 1;
   sortHeaders.forEach(th => th.removeAttribute("aria-sort"));
   selectCharacterBeforeQol(id);

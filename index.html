@@ -7,7 +7,7 @@
 
     <title>DCC Character Sheet</title>
 
-    <link rel="stylesheet" href="style.css?v=0124">
+    <link rel="stylesheet" href="style.css?v=0125">
 </head>
 
 <body>
@@ -428,7 +428,11 @@
 </div>
 
 
-    <div class="skill-qol-bar"><label><input type="checkbox" id="showHiddenSkills"> Show Hidden Skills</label><button type="button" id="clearSkillFilters">CLEAR FILTERS</button></div>
+    <div class="skill-qol-bar"><label><input type="checkbox" id="showHiddenSkills"> Show Hidden Skills</label><label class="advancement-filter-label">Advancement
+<select id="skillAdvancementFilter" aria-label="Filter skills by advancement mark">
+<option value="">All Skills</option>
+<option value="marked">Marked Only ✓</option>
+</select></label><button type="button" id="clearSkillFilters">CLEAR FILTERS</button></div>
 <div class="skill-table-wrapper">
 
         <table class="skill-table">
@@ -440,7 +444,7 @@
                     <th data-skill-sort="enhancedRank" role="button" tabindex="0" title="Click to sort">Enhanced</th>
                     <th data-skill-sort="stat" role="button" tabindex="0" title="Click to sort">Stat</th>
                     <th data-skill-sort="mod" role="button" tabindex="0" title="Click to sort">Mod</th>
-                    <th>✓</th>
+                    <th data-skill-sort="advancementMarked" role="button" tabindex="0" title="Sort by advancement mark">✓</th>
                 </tr>
             </thead>
 
@@ -958,6 +962,7 @@
     <div id="skillViewActions" class="sidebar-actions">
         <button type="button" id="editSkillButton"
                 class="primary-action">EDIT</button>
+        <button type="button" id="rankUpSkillButton" class="rank-up-action">RANK UP</button>
         <button type="button" id="pinSkillButton">PIN</button>
         <button type="button" id="hideSkillButton">HIDE</button>
         <button type="button" id="duplicateSkillButton">DUPLICATE</button>
@@ -967,7 +972,7 @@
 
 </aside>
 
-    <script src="app.js?v=0124"></script>
+    <script src="app.js?v=0125"></script>
 
 </body>
 
