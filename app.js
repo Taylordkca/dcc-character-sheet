@@ -1994,6 +1994,7 @@ const EQUIPMENT_SLOTS = [
     "Torso",
     "Arms",
     "Hands/Holding",
+    "Back",
     "Legs",
     "Feet",
     "Accessories"
@@ -2021,6 +2022,13 @@ function renderEquipped() {
 
         const heading = document.createElement("h3");
         heading.textContent = slot;
+        if (slot === "Accessories") {
+            group.classList.add("accessories-slot-group");
+            const counter = document.createElement("span");
+            counter.className = "accessories-counter";
+            counter.textContent = equippedItems.filter(item => item.equipmentSlot === "Accessories").length + " / 10";
+            heading.appendChild(counter);
+        }
         group.appendChild(heading);
 
         const itemsInSlot = equippedItems.filter(
@@ -2035,6 +2043,7 @@ function renderEquipped() {
         } else {
             const list = document.createElement("div");
             list.className = "equipment-slot-items";
+            if (slot === "Accessories") list.classList.add("accessories-items-grid");
 
             itemsInSlot.forEach(item => {
                 const button = document.createElement("button");

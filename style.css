@@ -1878,3 +1878,14 @@ main { position:relative; }
   .skill-table td.skill-rank-cell { white-space:nowrap; }
   .skill-mobile-enhanced { display:inline; color:#b11d1d; font-weight:700; white-space:nowrap; }
 }
+
+/* v1.2.7 — full-width accessories, visual-only counter */
+.equipped-list { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.accessories-slot-group { grid-column:1 / -1; }
+.accessories-slot-group h3 { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.accessories-counter { font-size:13px; white-space:nowrap; color:#555; }
+.accessories-items-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 12px; }
+@media(max-width:750px) {
+ .equipped-list { grid-template-columns:1fr; }
+ .accessories-items-grid { grid-template-columns:1fr; }
+}
