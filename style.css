@@ -1889,3 +1889,9 @@ main { position:relative; }
  .equipped-list { grid-template-columns:1fr; }
  .accessories-items-grid { grid-template-columns:1fr; }
 }
+
+/* Mobile input focus: avoid iOS automatic zoom while preserving user pinch zoom. */
+@media (max-width: 900px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select, textarea { font-size: 16px !important; }
+}
